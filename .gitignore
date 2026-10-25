@@ -5,6 +5,7 @@ node_modules/
 dist/
 coverage/
 *.log
+.venv
 
 # Ferramentas de trabalho locais
 /AGENTS.md
