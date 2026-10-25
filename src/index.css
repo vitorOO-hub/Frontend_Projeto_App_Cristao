@@ -12,3 +12,23 @@ main {
   margin: 0 auto;
   padding: 24px 16px;
 }
+
+form,
+label {
+  display: grid;
+  gap: 8px;
+}
+
+form {
+  gap: 16px;
+}
+
+input,
+button {
+  font: inherit;
+  padding: 8px;
+}
+
+[role='alert'] {
+  color: #d32f2f;
+}
