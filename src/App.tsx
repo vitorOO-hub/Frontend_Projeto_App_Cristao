@@ -1,23 +1,34 @@
 import { useEffect, useState } from 'react'
-import { ApiError, api } from './api/client.ts'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import { me, type UserSelf } from './api/auth.ts'
+import Cadastro from './pages/Cadastro.tsx'
+import Home from './pages/Home.tsx'
+import Login from './pages/Login.tsx'
 
-// Página provisória até as telas de cadastro e login (#56, #57): confirma que o proxy /api chega ao Flask.
 export default function App() {
-  const [status, setStatus] = useState('verificando…')
+  // undefined: ainda consultando GET /me; null: ninguém logado.
+  const [user, setUser] = useState<UserSelf | null | undefined>(undefined)
 
   useEffect(() => {
-    api
-      .get<{ status: string }>('/health')
-      .then((data) => setStatus(data.status === 'ok' ? 'conectada' : data.status))
-      .catch((error: unknown) =>
-        setStatus(error instanceof ApiError ? `indisponível (${error.code})` : 'indisponível'),
-      )
+    me().then(setUser, () => setUser(null))
   }, [])
 
+  if (user === undefined) {
+    return (
+      <main>
+        <p>Carregando…</p>
+      </main>
+    )
+  }
+
   return (
-    <main>
-      <h1>App Cristão</h1>
-      <p>API: {status}</p>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={user ? <Home user={user} onLogout={() => setUser(null)} /> : <Navigate to="/login" replace />} />
+        <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login onLogin={setUser} />} />
+        <Route path="/cadastro" element={user ? <Navigate to="/" replace /> : <Cadastro onLogin={setUser} />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
