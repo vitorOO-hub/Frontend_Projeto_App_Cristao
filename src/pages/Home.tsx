@@ -34,6 +34,7 @@ export default function Home({ user, onLogout }: { user: UserSelf; onLogout: () 
         </span>
         <span>
           <span className="profile-name">{user.name}</span>
+          {user.username && <span className="profile-email">@{user.username}</span>}
           <span className="profile-email">{user.email}</span>
         </span>
       </div>

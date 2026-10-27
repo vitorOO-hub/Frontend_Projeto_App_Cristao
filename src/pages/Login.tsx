@@ -7,7 +7,7 @@ import { errorMessage } from '../errorMessage.ts'
 import { useFieldErrors } from '../useFieldErrors.ts'
 
 export default function Login({ onLogin }: { onLogin: (user: UserSelf) => void }) {
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -17,7 +17,7 @@ export default function Login({ onLogin }: { onLogin: (user: UserSelf) => void }
     setLoading(true)
     setError('')
     try {
-      onLogin(await login(email, password))
+      onLogin(await login(identifier, password))
     } catch (e) {
       setError(errorMessage(e))
       setLoading(false)
@@ -42,16 +42,18 @@ export default function Login({ onLogin }: { onLogin: (user: UserSelf) => void }
         }}
       >
         <Field
-          label="E-mail"
-          name="email"
-          type="email"
-          autoComplete="email"
+          label="E-mail ou usuário"
+          name="login"
+          autoComplete="username"
+          autoCapitalize="none"
+          spellCheck={false}
           required
-          value={email}
-          error={fields.errors.email}
+          maxLength={254}
+          value={identifier}
+          error={fields.errors.login}
           onBlur={fields.onBlur}
           onChange={(e) => {
-            setEmail(e.target.value)
+            setIdentifier(e.target.value)
             fields.onChange(e)
           }}
         />

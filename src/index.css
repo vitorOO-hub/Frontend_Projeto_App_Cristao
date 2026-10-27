@@ -779,8 +779,21 @@ a:focus-visible,
   }
 
   .lead {
-    margin: 10px 0 18px;
+    margin: 10px 0 16px;
     font-size: var(--step-small);
+  }
+
+  /* O cadastro tem quatro campos: um pouco mais baixos para o botão caber na primeira tela. */
+  form {
+    gap: 12px;
+  }
+
+  .field input {
+    height: 50px;
+  }
+
+  .field-toggle {
+    top: 4px;
   }
 
   .stage {

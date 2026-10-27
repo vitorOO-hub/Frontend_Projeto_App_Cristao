@@ -11,7 +11,7 @@ vi.mock('../api/auth.ts', () => ({ login: vi.fn(), register: vi.fn() }))
 // O feed ao lado do formulário busca versículos na rede; não é o assunto destes testes.
 vi.mock('../components/FeedPreview.tsx', () => ({ default: () => null }))
 
-const user = { id: 'u1', name: 'Maria', email: 'maria@exemplo.com', bio: '', role: 'user', created_at: '2026-10-27T00:00:00Z' }
+const user = { id: 'u1', name: 'Maria', username: 'maria', email: 'maria@exemplo.com', bio: '', role: 'user', created_at: '2026-10-27T00:00:00Z' }
 const password = 'uma frase longa'
 
 beforeEach(() => {
@@ -20,7 +20,7 @@ beforeEach(() => {
 })
 afterEach(cleanup)
 
-async function fill(values: { name?: string; email?: string; password?: string } = {}) {
+async function fill(values: { name?: string; username?: string; email?: string; password?: string } = {}) {
   const typed = userEvent.setup()
   render(
     <MemoryRouter>
@@ -28,6 +28,7 @@ async function fill(values: { name?: string; email?: string; password?: string }
     </MemoryRouter>,
   )
   await typed.type(screen.getByLabelText('Nome'), values.name ?? 'Maria')
+  await typed.type(screen.getByLabelText('Usuário'), values.username ?? 'maria')
   await typed.type(screen.getByLabelText('E-mail'), values.email ?? 'maria@exemplo.com')
   await typed.type(screen.getByLabelText('Senha'), values.password ?? password)
   return typed
@@ -99,5 +100,24 @@ test('nome com espaços nas pontas mas 2 caracteres de verdade é aceito', async
   const typed = await fill({ name: ' Jo ' })
   await submit(typed)
 
-  expect(register).toHaveBeenCalledWith(' Jo ', 'maria@exemplo.com', password)
+  expect(register).toHaveBeenCalledWith(' Jo ', 'maria', 'maria@exemplo.com', password)
+})
+
+test('usuário repetido aparece no campo e leva o foco até ele', async () => {
+  vi.mocked(register).mockRejectedValue(new ApiError(409, 'username_conflict', 'Nome de usuário já em uso.'))
+  const typed = await fill()
+  await submit(typed)
+
+  const field = screen.getByLabelText('Usuário')
+  expect(await screen.findByText('Este usuário já existe. Escolha outro.')).toBeTruthy()
+  expect(field.getAttribute('aria-invalid')).toBe('true')
+  expect(document.activeElement).toBe(field)
+})
+
+test('usuário fora do formato é recusado no campo, sem ir ao servidor', async () => {
+  const typed = await fill({ username: 'maria..silva' })
+  await submit(typed)
+
+  expect(screen.getByText('Use letras, números, ponto e _, sem ponto no começo, no fim ou repetido.')).toBeTruthy()
+  expect(register).not.toHaveBeenCalled()
 })

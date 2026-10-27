@@ -22,3 +22,8 @@ test('padrão não atendido (nome só com espaços) tem mensagem própria', () =
 test('campo vazio vence os outros problemas', () => {
   expect(fieldMessage(input({ valueMissing: true, tooShort: true }))).toBe('Preencha este campo.')
 })
+
+test('padrão com data-pattern-message usa a descrição do campo', () => {
+  const field = { ...input({ patternMismatch: true }), dataset: { patternMessage: 'Use letras e números.' } }
+  expect(fieldMessage(field)).toBe('Use letras e números.')
+})

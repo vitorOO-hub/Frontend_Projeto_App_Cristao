@@ -157,7 +157,7 @@ test('logout esquece o token CSRF da sessão encerrada', async () => {
   )
   await login('a@b.com', 'x'.repeat(12))
   await logout()
-  await register('Maria', 'm@b.com', 'x'.repeat(12))
+  await register('Maria', 'maria', 'm@b.com', 'x'.repeat(12))
   expect(calls.map((c) => `${c.method} ${c.url}`)).toEqual([
     'GET /api/auth/csrf',
     'POST /api/auth/login',
