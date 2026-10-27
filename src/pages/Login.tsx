@@ -26,9 +26,13 @@ export default function Login({ onLogin }: { onLogin: (user: UserSelf) => void }
 
   return (
     <Layout
-      title="Entre na sua conta"
+      title="Fé que cabe no feed."
       sentence="Vídeos curtos de louvor, devocional e testemunho, cada um com o seu versículo."
-      nav={<Link to="/cadastro">Criar conta</Link>}
+      nav={
+        <>
+          Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
+        </>
+      }
     >
       <form
         noValidate

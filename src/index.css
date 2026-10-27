@@ -1,28 +1,29 @@
-/* Direção "The product performs" (design-taste-frontend, seed 799491874): duas metades quase pretas
-   separadas só por tom, Hanken Grotesk em 400/500, botão claro e retangular; tangerina só no Amém e na marca. */
+/* Direção "Vidro" (Apple Liquid Glass) com o layout dividido de antes: painel de vidro escuro à esquerda,
+   o card do vídeo e a fila "A seguir" à direita, e a foto do vídeo atual borrada no fundo para o vidro refratar.
+   Geist no texto, Newsreader itálico no versículo, Archivo condensado (da direção Duotone) só no título. */
 :root {
-  --field-1: #05070a; /* metade esquerda */
-  --field-2: #0d1118; /* metade direita, um tom acima */
+  --ink: #0d0d10; /* texto sobre superfícies brancas */
   --text: #ffffff;
-  --lead: #e2e6ee; /* frase de apoio: 15:1 */
-  --muted: #a3abbd; /* dicas e legendas: 8:1 sobre os dois fundos */
-  --label: #e6e8ee;
-  --line: #3a4150; /* borda dos campos de formulário */
-  --line-strong: #6a7186;
-  --surface: #f4f4f2;
-  --ink: #1f2b4d; /* azul-marinho, texto sobre superfícies claras */
-  --accent: #f7941d;
-  --error: #ff9b8f;
-  --error-bg: #2a1214;
+  --soft: rgb(255 255 255 / 86%); /* frase de apoio, legendas e dicas */
+  --glass: rgb(16 16 20 / 42%);
+  --glass-line: rgb(255 255 255 / 26%);
+  --glass-hi: rgb(255 255 255 / 38%); /* destaque inset na borda de cima */
+  --field: rgb(255 255 255 / 10%);
+  --field-focus: rgb(255 255 255 / 16%);
+  --error: #ffd2cc;
+  --error-bg: rgb(255 90 70 / 18%);
 
-  --font: 'Hanken Grotesk', system-ui, sans-serif;
+  --font: 'Geist Variable', system-ui, sans-serif;
+  --serif: 'Newsreader Variable', Georgia, serif;
+  --display: 'Archivo Variable', 'Arial Narrow', sans-serif;
   --step-small: 1rem; /* 16: nada de texto corrido abaixo disso */
-  --step-label: 1rem; /* 16 */
-  --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem); /* 17-19 */
-  --step-head: clamp(2.25rem, 1.3rem + 3.2vw, 4rem); /* 36-64 */
+  --step-body: 1.125rem; /* 18 */
+  --step-head: clamp(3.5rem, 2.2rem + 3.4vw, 5.25rem); /* 56-84: "FÉ QUE CABE" ainda cabe numa linha do painel */
   --margin: 40px;
-  --reel-height: min(76svh, 700px);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --reel-height: min(78svh, 720px);
+  /* Movimento Premium: desacelera e para, sem passar do ponto. */
+  --enter: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --calm: cubic-bezier(0.4, 0, 0.2, 1);
 
   color-scheme: dark;
   font-family: var(--font);
@@ -35,149 +36,172 @@
 
 body {
   margin: 0;
-  background: var(--field-1);
+  background: var(--ink);
   color: var(--text);
   font-size: var(--step-body);
-  line-height: 1.45;
-  letter-spacing: -0.005em;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
 }
 
 a {
   color: var(--text);
-  font-weight: 500;
+  font-weight: 600;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
 
-/* Duas metades por tom, encontrando-se numa aresta reta no meio; a barra do topo passa por cima das duas. */
+/* Vidro escuro: refrata o que está atrás, borda clara e destaque em cima; sem sombra parada. */
+.glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  backdrop-filter: blur(28px) saturate(170%);
+  border: 1px solid var(--glass-line);
+  box-shadow: inset 0 1px 0 var(--glass-hi); /* taste-skill-ignore: destaque inset do vidro, não é sombra */
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Borrada o bastante para virar luz (as lanternas viram bokeh) e escura o bastante para o texto branco. */
+  filter: blur(18px) brightness(0.5) saturate(1.4);
+  transform: scale(1.08);
+  animation: fade 900ms var(--calm) both;
+}
+
 .shell {
-  position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 30rem) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  column-gap: 48px;
+  max-width: 1240px;
   min-height: 100svh;
+  margin: 0 auto;
+  padding: 24px var(--margin) var(--margin);
 }
 
 .topbar {
-  position: absolute;
-  inset: 0 0 auto;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--margin);
-  pointer-events: none;
-}
-
-.topbar > * {
-  pointer-events: auto;
+  grid-column: 1 / -1;
+  margin-bottom: 24px;
 }
 
 .brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-  font-weight: 500;
+  gap: 10px;
+  height: 48px;
+  padding: 0 18px 0 12px;
+  font-size: var(--step-body);
+  font-weight: 600;
+  border-radius: 999px;
 }
 
-.topbar-nav {
-  font-size: var(--step-label);
-}
-
+/* O painel: título, frase, formulário e o convite para a outra tela. */
 .side {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 140px var(--margin) var(--margin);
-  background: var(--field-1);
+  align-self: center;
+  padding: 36px 32px 30px;
+  border-radius: 32px;
+  animation: sheet-in 700ms var(--enter) both;
 }
 
-.side > * {
-  max-width: 34rem;
-}
-
+/* Condensado e em caixa alta, em no máximo duas linhas; a folga em cima é do acento do É e do Á. */
 .headline {
   margin: 0;
-  overflow: hidden;
-  padding-bottom: 0.06em;
+  padding-top: 0.14em;
+  font-family: var(--display);
   font-size: var(--step-head);
-  font-weight: 500;
-  line-height: 0.95;
-  letter-spacing: -0.045em;
+  font-weight: 900;
+  font-stretch: 62%;
+  font-variation-settings: 'wdth' 62;
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  text-wrap: balance;
   overflow-wrap: anywhere;
 }
 
-.headline span {
-  display: block;
-  animation: rise 900ms var(--ease-out) both;
-}
-
 .lead {
-  max-width: 44ch;
-  margin: 20px 0 36px;
-  color: var(--lead);
+  margin: 14px 0 26px;
+  color: var(--soft);
 }
 
-/* Entrada: cada parte sobe e aparece em sequência, depois do título.
-   O aviso de erro fica de fora: ele surge depois, em resposta ao envio, e tem que aparecer na hora. */
+.alt {
+  margin-top: 18px;
+  font-size: var(--step-small);
+  text-align: center;
+  color: var(--soft);
+}
+
+/* Entrada: o painel sobe desfocando (com o título junto, para ele ficar legível logo) e as partes seguintes
+   aparecem em sequência. O aviso de erro fica de fora: ele surge em resposta ao envio e tem que aparecer na hora. */
 .brand,
-.topbar-nav,
 .lead,
+.alt,
 .after-headline form > :not(.alert),
 .after-headline > :not(form):not(.alert),
 .stage-figure > * {
-  animation: fade-up 600ms var(--ease-out) both;
+  animation: item-in 550ms var(--enter) both;
 }
 
-.brand,
-.topbar-nav {
-  animation-delay: 150ms;
+.brand {
+  animation-delay: 100ms;
 }
 
 .lead {
-  animation-delay: 420ms;
+  animation-delay: 300ms;
 }
 
 .after-headline form > :nth-child(1),
 .after-headline > :nth-child(1) {
-  animation-delay: 500ms;
+  animation-delay: 420ms;
 }
 
 .after-headline form > :nth-child(2),
 .after-headline > :nth-child(2) {
-  animation-delay: 570ms;
+  animation-delay: 480ms;
 }
 
 .after-headline form > :nth-child(3),
 .after-headline > :nth-child(3) {
-  animation-delay: 640ms;
+  animation-delay: 540ms;
 }
 
 .after-headline form > :nth-child(4),
 .after-headline > :nth-child(4) {
-  animation-delay: 710ms;
+  animation-delay: 600ms;
 }
 
 .after-headline form > :nth-child(5) {
-  animation-delay: 780ms;
+  animation-delay: 660ms;
+}
+
+.alt {
+  animation-delay: 700ms;
 }
 
 .stage-figure > :nth-child(1) {
-  animation-delay: 250ms;
+  animation-delay: 300ms;
 }
 
 .stage-figure > :nth-child(2) {
-  animation-delay: 400ms;
+  animation-delay: 420ms;
 }
 
 .stage-figure > :nth-child(3) {
-  animation-delay: 550ms;
+  animation-delay: 540ms;
 }
 
-/* Formulário */
+/* Formulário: campos e botões em pílula. */
 form {
   display: grid;
-  gap: 20px;
+  gap: 14px;
 }
 
 .field {
@@ -186,9 +210,8 @@ form {
 }
 
 .field label {
-  font-size: var(--step-label);
+  font-size: var(--step-small);
   font-weight: 500;
-  color: var(--label);
 }
 
 .field-control {
@@ -197,24 +220,26 @@ form {
 
 .field input {
   width: 100%;
-  height: 52px;
-  padding: 0 16px;
+  height: 54px;
+  padding: 0 22px;
   font: inherit;
+  font-size: 1.0625rem;
   color: var(--text);
-  background: #0b0e14;
-  border: 1px solid var(--line);
-  border-radius: 0;
-  transition: border-color 150ms ease-out;
+  background: var(--field);
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  transition: background-color 200ms var(--calm), border-color 200ms var(--calm);
 }
 
 .field input:hover {
-  border-color: var(--line-strong);
+  border-color: rgb(255 255 255 / 45%);
 }
 
 .field input:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--text);
   outline-offset: 2px;
-  border-color: var(--line-strong);
+  background: var(--field-focus);
+  border-color: var(--text);
 }
 
 .field input[aria-invalid='true'] {
@@ -222,34 +247,42 @@ form {
 }
 
 .field-password input {
-  padding-right: 104px;
+  padding-right: 108px;
 }
 
 .field-toggle {
   position: absolute;
-  top: 0;
-  right: 0;
-  height: 52px;
+  top: 6px;
+  right: 6px;
+  height: 42px;
   padding: 0 16px;
   font: inherit;
-  font-size: var(--step-label);
-  color: var(--label);
+  font-size: var(--step-small);
+  font-weight: 500;
+  color: var(--text);
   background: none;
   border: 0;
+  border-radius: 999px;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
   cursor: pointer;
 }
 
+.field-toggle:hover {
+  background: var(--field);
+}
+
 .field-hint,
 .field-error {
   margin: 0;
+  padding: 0 22px;
   font-size: var(--step-small);
+  line-height: 1.4;
 }
 
 .field-hint {
-  color: var(--muted);
+  color: var(--soft);
 }
 
 .field-error {
@@ -258,10 +291,11 @@ form {
 
 .alert {
   margin: 0;
-  padding: 12px 16px;
-  font-size: var(--step-label);
+  padding: 12px 22px;
+  font-size: var(--step-small);
   color: var(--error);
   background: var(--error-bg);
+  border-radius: 20px;
 }
 
 .button {
@@ -270,27 +304,28 @@ form {
   justify-content: center;
   gap: 10px;
   width: 100%;
-  height: 52px;
+  height: 56px;
+  margin-top: 8px;
   font: inherit;
-  font-weight: 500;
-  color: var(--field-1);
-  background: var(--surface);
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--text);
   border: 0;
-  border-radius: 0;
+  border-radius: 999px;
   cursor: pointer;
-  transition: background-color 150ms ease-out, transform 150ms ease-out;
+  transition: background-color 200ms var(--calm), transform 150ms var(--calm);
 }
 
 .button:hover:not(:disabled) {
-  background: #ffffff;
+  background: #ececee;
 }
 
 .button:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: scale(0.97);
 }
 
 .button:disabled {
-  opacity: 0.7;
+  opacity: 0.75;
   cursor: progress;
 }
 
@@ -299,7 +334,7 @@ form {
 a:focus-visible,
 .reel button:focus-visible,
 .queue-item:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--text);
   outline-offset: 3px;
 }
 
@@ -308,19 +343,19 @@ a:focus-visible,
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 0 0 28px;
+  margin: 0 0 20px;
 }
 
 .avatar {
   display: grid;
   place-items: center;
   flex: none;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--ink);
-  background: var(--surface);
+  background: var(--text);
 }
 
 .profile-name,
@@ -330,22 +365,19 @@ a:focus-visible,
 }
 
 .profile-name {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .profile-email {
-  font-size: var(--step-label);
-  color: var(--muted);
+  font-size: var(--step-small);
+  color: var(--soft);
 }
 
-/* Metade direita: o feed funcionando, com a fila "A seguir" ao lado. */
-/* O feed encosta na margem direita: as duas bordas externas da página ficam iguais (40px). */
+/* À direita: o feed funcionando, com a fila "A seguir" ao lado. Encosta na margem direita. */
 .stage {
   display: grid;
   align-items: center;
   justify-items: end;
-  padding: 112px var(--margin) var(--margin);
-  background: var(--field-2);
 }
 
 .stage-figure {
@@ -361,11 +393,10 @@ a:focus-visible,
   grid-column: 1 / -1;
   max-width: 52ch;
   font-size: var(--step-small);
-  color: var(--muted);
+  color: var(--soft);
 }
 
 .stage-caption a {
-  color: var(--lead);
   font-weight: 400;
 }
 
@@ -378,16 +409,18 @@ a:focus-visible,
   overflow: hidden;
   color: #ffffff;
   background: #000000;
-  border-radius: 16px;
+  border: 1px solid var(--glass-line);
+  border-radius: 28px;
 }
 
+/* A foto se aproxima devagar enquanto o vídeo está na tela. */
 .reel-media {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  animation: reel-in 450ms ease-out both, drift 16s ease-in-out 450ms infinite alternate;
+  animation: fade 450ms ease-out both, approach 16s var(--calm) both;
 }
 
 /* Véu neutro só sob o texto, para ler sobre a imagem. */
@@ -396,7 +429,7 @@ a:focus-visible,
   position: absolute;
   inset: auto 0 0;
   height: 62%;
-  background: linear-gradient(to top, rgb(0 0 0 / 82%), rgb(0 0 0 / 0%)); /* taste-skill-ignore: véu neutro sob texto sobre foto */
+  background: linear-gradient(to top, rgb(0 0 0 / 80%), rgb(0 0 0 / 0%)); /* taste-skill-ignore: véu neutro sob texto sobre foto */
   pointer-events: none;
 }
 
@@ -406,10 +439,17 @@ a:focus-visible,
   z-index: 1;
   display: flex;
   justify-content: space-between;
-  padding: 16px 16px 28px;
+  padding: 14px;
+}
+
+.reel-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
   font-size: var(--step-small);
-  font-weight: 500;
-  background: linear-gradient(to bottom, rgb(0 0 0 / 45%), rgb(0 0 0 / 0%)); /* taste-skill-ignore: véu neutro sob texto sobre foto */
+  font-weight: 600;
+  border-radius: 999px;
 }
 
 .reel-bottom {
@@ -429,56 +469,58 @@ a:focus-visible,
 
 .reel-author {
   margin: 0 0 4px;
-  font-size: var(--step-label);
-  font-weight: 500;
+  font-size: var(--step-small);
+  font-weight: 600;
 }
 
 .reel-caption {
   margin: 0 0 12px;
-  font-size: var(--step-label);
-  line-height: 1.35;
+  font-size: var(--step-small);
+  line-height: 1.4;
 }
 
 .reel-verse {
-  height: 34px;
-  padding: 0 14px;
+  height: 40px;
+  padding: 0 16px;
   font: inherit;
   font-size: var(--step-small);
-  font-weight: 500;
+  font-weight: 600;
   color: #ffffff;
-  background: rgb(255 255 255 / 20%);
-  border: 0;
   border-radius: 999px;
   cursor: pointer;
-  transition: background-color 150ms ease-out;
+  transition: background-color 200ms var(--calm);
 }
 
 .reel-verse:hover {
-  background: rgb(255 255 255 / 30%);
+  background: rgb(40 40 46 / 55%);
 }
 
 .reel-verse[aria-expanded='true'] {
   color: var(--ink);
-  background: var(--surface);
+  background: var(--text);
 }
 
 .reel-passage {
   margin: 0 0 12px;
-  padding: 14px 16px;
-  font-size: var(--step-label);
-  line-height: 1.4;
-  color: var(--ink);
-  background: var(--surface);
-  border-radius: 12px;
-  animation: fade-up 220ms ease-out both;
+  padding: 16px 18px;
+  border-radius: 22px;
+  animation: quote-in 450ms var(--enter) both;
 }
 
 .reel-passage p {
   margin: 0 0 8px;
+  font-size: var(--step-small);
 }
 
 .reel-passage blockquote {
   margin: 0;
+}
+
+.reel-passage blockquote p {
+  font-family: var(--serif);
+  font-size: 1.375rem;
+  font-style: italic;
+  line-height: 1.3;
 }
 
 .reel-passage > p:only-child {
@@ -489,8 +531,8 @@ a:focus-visible,
   padding: 0;
   font: inherit;
   font-size: var(--step-small);
-  font-weight: 500;
-  color: var(--ink);
+  font-weight: 600;
+  color: #ffffff;
   background: none;
   border: 0;
   text-decoration: underline;
@@ -501,20 +543,21 @@ a:focus-visible,
 .reel-passage cite {
   font-size: var(--step-small);
   font-style: normal;
-  color: #4a5470;
+  font-weight: 600;
+  color: var(--soft);
 }
 
 .reel-rail {
   display: grid;
   justify-items: center;
-  gap: 18px;
+  gap: 16px;
 }
 
 .reel-amen,
 .reel-comments {
   display: grid;
   justify-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .reel-amen {
@@ -531,15 +574,10 @@ a:focus-visible,
   place-items: center;
   width: 58px;
   height: 58px;
-  font-size: var(--step-small);
-  font-weight: 500;
-  background: rgb(255 255 255 / 20%);
+  font-size: 0.875rem;
+  font-weight: 600;
   border-radius: 50%;
-  transition: background-color 150ms ease-out, transform 150ms ease-out;
-}
-
-.reel-amen:hover .reel-amen-word {
-  background: rgb(255 255 255 / 30%);
+  transition: background-color 250ms var(--calm), transform 150ms var(--calm);
 }
 
 .reel-amen:active .reel-amen-word {
@@ -548,30 +586,29 @@ a:focus-visible,
 
 .reel-amen[aria-pressed='true'] .reel-amen-word {
   color: var(--ink);
-  background: var(--accent);
+  background: var(--text);
+  animation: pop 340ms var(--calm);
 }
 
 .reel-count {
   font-size: var(--step-small);
-  font-weight: 500;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .reel-next {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   color: #ffffff;
-  background: rgb(255 255 255 / 20%);
-  border: 0;
   border-radius: 50%;
   cursor: pointer;
-  transition: background-color 150ms ease-out;
+  transition: transform 150ms var(--calm);
 }
 
-.reel-next:hover {
-  background: rgb(255 255 255 / 30%);
+.reel-next:active {
+  transform: scale(0.92);
 }
 
 .queue {
@@ -585,7 +622,7 @@ a:focus-visible,
 .queue-title {
   margin: 0;
   font-size: var(--step-small);
-  color: var(--muted);
+  color: var(--soft);
 }
 
 .queue-item {
@@ -594,8 +631,8 @@ a:focus-visible,
   padding: 0;
   overflow: hidden;
   background: #000000;
-  border: 0;
-  border-radius: 10px;
+  border: 1px solid var(--glass-line);
+  border-radius: 16px;
   cursor: pointer;
 }
 
@@ -604,12 +641,12 @@ a:focus-visible,
   height: 100%;
   object-fit: cover;
   opacity: 0.8;
-  transition: opacity 150ms ease-out, transform 300ms var(--ease-out);
+  transition: opacity 200ms var(--calm), transform 400ms var(--enter);
 }
 
 .queue-item:hover .queue-media {
   opacity: 1;
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
 .queue-item::after {
@@ -623,10 +660,10 @@ a:focus-visible,
 
 .queue-category {
   position: absolute;
-  inset: auto 8px 8px;
+  inset: auto 10px 10px;
   z-index: 1;
   font-size: var(--step-small);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.2;
   color: #ffffff;
   text-align: left;
@@ -639,7 +676,7 @@ a:focus-visible,
   justify-content: center;
   gap: 12px;
   min-height: 100svh;
-  color: var(--lead);
+  color: var(--soft);
 }
 
 .spinner {
@@ -651,28 +688,47 @@ a:focus-visible,
   animation: spin 700ms linear infinite;
 }
 
-@keyframes rise {
-  from {
-    transform: translateY(105%);
-  }
-}
-
-@keyframes fade-up {
+@keyframes sheet-in {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(28px) scale(0.98);
+    filter: blur(8px);
   }
 }
 
-@keyframes reel-in {
+@keyframes item-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes quote-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@keyframes fade {
   from {
     opacity: 0;
   }
 }
 
-@keyframes drift {
+@keyframes approach {
+  from {
+    transform: scale(1.02);
+  }
+
   to {
-    transform: scale(1.08) translateY(-2%);
+    transform: scale(1.12);
+  }
+}
+
+@keyframes pop {
+  45% {
+    transform: scale(1.14);
   }
 }
 
@@ -683,7 +739,7 @@ a:focus-visible,
 }
 
 /* Sem espaço para a fila ao lado do vídeo: só o vídeo. */
-@media (max-width: 1180px) {
+@media (max-width: 1120px) {
   .stage-figure {
     grid-template-columns: auto;
   }
@@ -693,37 +749,72 @@ a:focus-visible,
   }
 }
 
-/* Celular e tablet: uma coluna. O formulário vem primeiro (é o trabalho da tela); o feed vem depois. */
+/* Celular e tablet: uma coluna. O formulário cabe na primeira tela; o card do vídeo vem embaixo,
+   com a fila "A seguir" numa linha abaixo dele. */
 @media (max-width: 899px) {
   :root {
-    --margin: 20px;
+    --margin: 16px;
+    --step-head: clamp(3.25rem, 16vw, 4.75rem);
     --reel-height: min(72svh, 620px);
   }
 
   .shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 36rem;
+    padding: 14px var(--margin) 32px;
   }
 
   .topbar {
-    position: static;
-    padding: 20px var(--margin);
+    margin-bottom: 14px;
+  }
+
+  .brand {
+    height: 42px;
+    font-size: var(--step-small);
   }
 
   .side {
-    padding: 40px var(--margin) 48px;
-  }
-
-  .side > * {
-    max-width: none;
+    padding: 24px 20px 20px;
+    border-radius: 28px;
   }
 
   .lead {
-    max-width: 44ch;
+    margin: 10px 0 18px;
+    font-size: var(--step-small);
   }
 
   .stage {
     justify-items: center;
-    padding: 40px var(--margin) 48px;
+    margin-top: 40px;
+  }
+
+  .stage-figure {
+    width: min(100%, calc(var(--reel-height) * 9 / 16));
+  }
+
+  .reel {
+    width: 100%;
+    height: auto;
+  }
+
+  .queue {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    width: auto;
+    height: auto;
+  }
+
+  .queue-title {
+    grid-column: 1 / -1;
+  }
+
+  .queue-item {
+    aspect-ratio: 3 / 4;
+  }
+
+  .reel-passage blockquote p {
+    font-size: 1.25rem;
   }
 }
 

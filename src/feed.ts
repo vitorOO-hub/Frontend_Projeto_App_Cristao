@@ -3,6 +3,7 @@
 // provedor reconhece (o backend só traduz João e Salmos); um nome que ele não conhece dá 404, e 404 repetidos
 // bloqueiam o IP do servidor no provedor por 1 hora.
 // Imagens: Wikimedia Commons, créditos em public/feed/credits.json e na legenda da tela.
+// Fotos de pessoas reais (show gospel) só como ambiente: sem perfil inventado e com legenda que só descreve a cena.
 export type Media = {
   kind: 'video' | 'photo'
   src: string
@@ -19,7 +20,8 @@ export type Media = {
 export type Reel = {
   id: string
   category: string
-  author: string
+  /** Perfil que postou; fica vazio nas fotos de pessoas reais. */
+  author?: string
   caption: string
   duration: string
   amens: number
@@ -29,6 +31,24 @@ export type Reel = {
 }
 
 export const reels: Reel[] = [
+  {
+    id: 'show-gospel',
+    category: 'Adoração',
+    caption: 'Show gospel em Votuporanga (SP), agosto de 2023.',
+    duration: '0:42',
+    amens: 128,
+    comments: 14,
+    verse: { reference: 'Mateus 5:16', query: 'matthew 5:16' },
+    media: {
+      kind: 'photo',
+      src: '/feed/2023-08-25-show-gospel-com-renata.jpg',
+      alt: 'Cantora ajoelhada num tapete, de braços abertos, diante de uma plateia com as lanternas dos celulares acesas',
+      title: '2023-08-25 Show Gospel com Renata Marin e Oasis Ministry 09',
+      author: 'ASCOM - Prefeitura de Votuporanga',
+      license: 'CC0',
+      href: 'https://commons.wikimedia.org/w/index.php?curid=136670693',
+    },
+  },
   {
     id: 'ponta-negra',
     category: 'Devocional',
@@ -65,6 +85,24 @@ export const reels: Reel[] = [
       author: 'Alvesgaspar',
       license: 'CC BY 3.0',
       href: 'https://commons.wikimedia.org/wiki/File:Guitar_May_2009-1.jpg',
+    },
+  },
+  {
+    id: 'show-gospel-vozes',
+    category: 'Louvor',
+    caption: 'Três vozes no mesmo show gospel em Votuporanga.',
+    duration: '1:05',
+    amens: 87,
+    comments: 9,
+    verse: { reference: 'Salmos 100:1', query: 'Salmos 100:1' },
+    media: {
+      kind: 'photo',
+      src: '/feed/2023-08-25-show-gospel-com-renata-2.jpg',
+      alt: 'Três cantores em pé no palco, cada um com seu microfone, com a plateia no escuro atrás',
+      title: '2023-08-25 Show Gospel com Renata Marin e Oasis Ministry 04',
+      author: 'ASCOM - Prefeitura de Votuporanga',
+      license: 'CC0',
+      href: 'https://commons.wikimedia.org/w/index.php?curid=136670689',
     },
   },
   {

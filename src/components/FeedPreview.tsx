@@ -61,83 +61,87 @@ export default function FeedPreview() {
   }
 
   return (
-    <figure className="stage-figure">
-      <div className="reel" data-ui>
-        <MediaView key={reel.id} media={reel.media} className="reel-media" live />
-        <div className="reel-top">
-          <span>{reel.category}</span>
-          <span>{reel.duration}</span>
-        </div>
-        <div className="reel-bottom">
-          <div className="reel-text">
-            <p className="reel-author">@{reel.author}</p>
-            <p className="reel-caption">{reel.caption}</p>
-            {verseOpen && (
-              <div className="reel-passage" aria-live="polite">
-                {verse?.status === 'ok' ? (
-                  <blockquote>
-                    <p>{verse.passage.text}</p>
-                    <cite>
-                      {verse.passage.reference} · {verse.passage.translation === 'almeida' ? 'Almeida' : verse.passage.translation}
-                    </cite>
-                  </blockquote>
-                ) : verse?.status === 'error' ? (
-                  <>
-                    <p>{verse.message}</p>
-                    <button type="button" className="reel-retry" onClick={() => loadVerse(reel)}>
-                      Tentar de novo
-                    </button>
-                  </>
-                ) : (
-                  <p>Carregando o versículo…</p>
-                )}
-              </div>
-            )}
-            <button type="button" className="reel-verse" aria-expanded={verseOpen} onClick={toggleVerse}>
-              {reel.verse.reference}
-            </button>
+    <>
+      {/* Fundo da página: a imagem do vídeo atual, borrada e escurecida, para o vidro ter o que refratar. */}
+      <img key={`backdrop-${reel.id}`} className="backdrop" src={reel.media.poster ?? reel.media.src} alt="" />
+      <figure className="stage-figure">
+        <div className="reel" data-ui>
+          <MediaView key={reel.id} media={reel.media} className="reel-media" live />
+          <div className="reel-top">
+            <span className="reel-chip glass">{reel.category}</span>
+            <span className="reel-chip glass">{reel.duration}</span>
           </div>
-          <div className="reel-rail">
-            <button
-              type="button"
-              className="reel-amen"
-              aria-pressed={said[index]}
-              aria-label={`Amém, ${amens}`}
-              onClick={() => setSaid((list) => list.map((value, i) => (i === index ? !value : value)))}
-            >
-              <span className="reel-amen-word">Amém</span>
-              <span className="reel-count">{amens}</span>
-            </button>
-            <span className="reel-comments" aria-label={`${reel.comments} comentários`}>
-              <svg viewBox="0 0 20 20" width="22" height="22" aria-hidden="true">
-                <path d="M4 3h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 3.5V14H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="currentColor" />
-              </svg>
-              <span className="reel-count">{reel.comments}</span>
-            </span>
-            <button type="button" className="reel-next" aria-label="Próximo vídeo" onClick={() => show(upNext[0])}>
-              <svg viewBox="0 0 20 20" width="22" height="22" aria-hidden="true">
-                <path d="M5 7.5 10 12.5 15 7.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+          <div className="reel-bottom">
+            <div className="reel-text">
+              {reel.author && <p className="reel-author">@{reel.author}</p>}
+              <p className="reel-caption">{reel.caption}</p>
+              {verseOpen && (
+                <div className="reel-passage glass" aria-live="polite">
+                  {verse?.status === 'ok' ? (
+                    <blockquote>
+                      <p>{verse.passage.text}</p>
+                      <cite>
+                        {verse.passage.reference} · {verse.passage.translation === 'almeida' ? 'Almeida' : verse.passage.translation}
+                      </cite>
+                    </blockquote>
+                  ) : verse?.status === 'error' ? (
+                    <>
+                      <p>{verse.message}</p>
+                      <button type="button" className="reel-retry" onClick={() => loadVerse(reel)}>
+                        Tentar de novo
+                      </button>
+                    </>
+                  ) : (
+                    <p>Carregando o versículo…</p>
+                  )}
+                </div>
+              )}
+              <button type="button" className="reel-verse glass" aria-expanded={verseOpen} onClick={toggleVerse}>
+                {reel.verse.reference}
+              </button>
+            </div>
+            <div className="reel-rail">
+              <button
+                type="button"
+                className="reel-amen"
+                aria-pressed={said[index]}
+                aria-label={`Amém, ${amens}`}
+                onClick={() => setSaid((list) => list.map((value, i) => (i === index ? !value : value)))}
+              >
+                <span className="reel-amen-word glass">Amém</span>
+                <span className="reel-count">{amens}</span>
+              </button>
+              <span className="reel-comments" aria-label={`${reel.comments} comentários`}>
+                <svg viewBox="0 0 20 20" width="22" height="22" aria-hidden="true">
+                  <path d="M4 3h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 3.5V14H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="currentColor" />
+                </svg>
+                <span className="reel-count">{reel.comments}</span>
+              </span>
+              <button type="button" className="reel-next glass" aria-label="Próximo vídeo" onClick={() => show(upNext[0])}>
+                <svg viewBox="0 0 20 20" width="22" height="22" aria-hidden="true">
+                  <path d="M5 7.5 10 12.5 15 7.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="queue" data-ui>
-        <p className="queue-title">A seguir</p>
-        {upNext.map((i) => (
-          <button key={reels[i].id} type="button" className="queue-item" onClick={() => show(i)} aria-label={`Ver: ${reels[i].caption}`}>
-            <MediaView media={reels[i].media} className="queue-media" />
-            <span className="queue-category">{reels[i].category}</span>
-          </button>
-        ))}
-      </div>
-      <figcaption className="stage-caption">
-        Exemplo do feed, {index + 1} de {reels.length}. {reel.media.kind === 'video' ? 'Vídeo' : 'Foto'}:{' '}
-        <a href={reel.media.href} target="_blank" rel="noreferrer">
-          “{reel.media.title}”
-        </a>
-        , {reel.media.author}, {reel.media.license}, via Wikimedia Commons.
-      </figcaption>
-    </figure>
+        <div className="queue" data-ui>
+          <p className="queue-title">A seguir</p>
+          {upNext.map((i) => (
+            <button key={reels[i].id} type="button" className="queue-item" onClick={() => show(i)} aria-label={`Ver: ${reels[i].caption}`}>
+              <MediaView media={reels[i].media} className="queue-media" />
+              <span className="queue-category">{reels[i].category}</span>
+            </button>
+          ))}
+        </div>
+        <figcaption className="stage-caption">
+          Exemplo do feed, {index + 1} de {reels.length}. {reel.media.kind === 'video' ? 'Vídeo' : 'Foto'}:{' '}
+          <a href={reel.media.href} target="_blank" rel="noreferrer">
+            “{reel.media.title}”
+          </a>
+          , {reel.media.author}, {reel.media.license}, via Wikimedia Commons.
+        </figcaption>
+      </figure>
+    </>
   )
 }

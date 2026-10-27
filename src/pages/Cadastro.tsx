@@ -52,8 +52,12 @@ export default function Cadastro({ onLogin }: { onLogin: (user: UserSelf) => voi
   return (
     <Layout
       title="Crie sua conta"
-      sentence="Leva menos de um minuto. Depois é só assistir, dizer Amém e comentar."
-      nav={<Link to="/login">Entrar</Link>}
+      sentence="Leva menos de um minuto. Depois é só assistir aos vídeos de louvor e devocional, dizer Amém e comentar."
+      nav={
+        <>
+          Já tem conta? <Link to="/login">Entrar</Link>
+        </>
+      }
     >
       <form
         noValidate

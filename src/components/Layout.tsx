@@ -4,31 +4,29 @@ import FeedPreview from './FeedPreview.tsx'
 type LayoutProps = {
   title: string
   sentence: string
-  /** Link para a outra tela de entrada ("Criar conta" / "Entrar"); a Home não tem. */
+  /** Convite para a outra tela de entrada ("Criar conta" / "Entrar"), embaixo do formulário; a Home não tem. */
   nav?: ReactNode
   children: ReactNode
 }
 
-/** Duas metades por tom: à esquerda o título e o formulário; à direita o feed funcionando. */
+/** Painel de vidro com o título e o formulário à esquerda; à direita o feed funcionando, sobre a foto do vídeo atual borrada. */
 export default function Layout({ title, sentence, nav, children }: LayoutProps) {
   return (
     <div className="shell">
       <header className="topbar">
-        <span className="brand">
-          <svg className="brand-mark" viewBox="0 0 18 32" width="18" height="32" aria-hidden="true">
-            <rect width="18" height="32" rx="3" fill="#f7941d" />
-            <path d="M6.5 11.5v9l7-4.5-7-4.5Z" fill="#05070a" />
+        <span className="brand glass">
+          <svg className="brand-mark" viewBox="0 0 18 28" width="18" height="28" aria-hidden="true">
+            <rect width="18" height="28" rx="5" fill="#ffffff" />
+            <path d="M6.5 9.5v9l7-4.5-7-4.5Z" fill="#0d0d10" />
           </svg>
           App Cristão
         </span>
-        {nav && <nav className="topbar-nav">{nav}</nav>}
       </header>
-      <main className="side">
-        <h1 className="headline">
-          <span>{title}</span>
-        </h1>
+      <main className="side glass">
+        <h1 className="headline">{title}</h1>
         <p className="lead">{sentence}</p>
         <div className="after-headline">{children}</div>
+        {nav && <nav className="alt">{nav}</nav>}
       </main>
       <aside className="stage" aria-label="Como é o feed do App Cristão">
         <FeedPreview />
