@@ -2,6 +2,8 @@
 // token CSRF só em memória e erros da API como ApiError.
 const BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? '/api'
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+// Acima do proxy (30 s) o navegador desistiria sozinho; aqui a tela não fica presa em "Entrando…".
+const REQUEST_TIMEOUT_MS = 15_000
 
 export class ApiError extends Error {
   readonly status: number
@@ -29,16 +31,25 @@ async function send(method: string, path: string, body?: unknown): Promise<Respo
   const headers: Record<string, string> = { Accept: 'application/json' }
   if (body !== undefined) headers['Content-Type'] = 'application/json'
   if (MUTATING.has(method) && csrfToken) headers['X-CSRF-Token'] = csrfToken
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
   try {
     return await fetch(BASE_URL + path, {
       method,
       headers,
       credentials: 'same-origin',
       body: body === undefined ? undefined : JSON.stringify(body),
+      signal: controller.signal,
     })
   } catch {
-    // Falha de rede não prova que o servidor ignorou o pedido (ex.: logout); a tela deve deixar tentar de novo.
+    // Timeout e falha de rede não provam que o servidor ignorou o pedido (ex.: logout): nunca repetimos
+    // sozinhos; a tela deve deixar o usuário tentar de novo.
+    if (controller.signal.aborted) {
+      throw new ApiError(0, 'timeout', 'O servidor demorou para responder. Tente novamente.')
+    }
     throw new ApiError(0, 'network_error', 'Sem conexão com o servidor. Tente novamente.')
+  } finally {
+    clearTimeout(timer)
   }
 }
 
@@ -68,6 +79,11 @@ async function parse<T>(response: Response): Promise<T> {
   )
 }
 
+/** Esquece o token de uma sessão encerrada; a próxima mutação busca outro antes de enviar. */
+export function forgetCsrf(): void {
+  csrfToken = null
+}
+
 /** Busca um token CSRF novo; pedidos simultâneos compartilham a mesma busca. */
 export function refreshCsrf(): Promise<void> {
   csrfRequest ??= send('GET', '/auth/csrf')
@@ -82,12 +98,15 @@ export function refreshCsrf(): Promise<void> {
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
   const mutating = MUTATING.has(method)
   if (mutating && !csrfToken) await refreshCsrf()
+  const usedToken = csrfToken
   let response = await send(method, path, body)
   if (mutating && response.status === 403) {
     const json = await readEnvelope(response.clone())
     if (json?.error?.code === 'csrf_invalid') {
-      // Token girado por outra aba, sessão expirada ou logout: renova e tenta uma única vez.
-      await refreshCsrf()
+      // Token girado por outra aba, sessão expirada ou logout: renova e tenta uma única vez. O servidor só
+      // recusa por CSRF antes de executar a ação, então repetir é seguro. Se outro pedido já renovou o
+      // token, usa o atual: buscar de novo invalidaria o token que aquele pedido acabou de receber.
+      if (csrfToken === usedToken) await refreshCsrf()
       response = await send(method, path, body)
     }
   }
