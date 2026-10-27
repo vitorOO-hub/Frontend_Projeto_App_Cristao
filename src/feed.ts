@@ -1,5 +1,7 @@
 // Vídeos de exemplo da tela de entrada. Perfis e legendas são fictícios; trocar pelos primeiros vídeos aprovados.
-// Versículos: texto exato da tradução Almeida devolvido pelo bible-api.com (a mesma fonte do backend).
+// Versículos: o texto vem de GET /api/bible/passages (Flask → bible-api.com, Almeida). `query` usa nomes que o
+// provedor reconhece (o backend só traduz João e Salmos); um nome que ele não conhece dá 404, e 404 repetidos
+// bloqueiam o IP do servidor no provedor por 1 hora.
 // Imagens: Wikimedia Commons, créditos em public/feed/credits.json e na legenda da tela.
 export type Media = {
   kind: 'video' | 'photo'
@@ -22,7 +24,7 @@ export type Reel = {
   duration: string
   amens: number
   comments: number
-  verse: { reference: string; text: string }
+  verse: { reference: string; query: string }
   media: Media
 }
 
@@ -35,7 +37,7 @@ export const reels: Reel[] = [
     duration: '0:38',
     amens: 17,
     comments: 3,
-    verse: { reference: 'Salmos 23:1', text: 'O Senhor é o meu pastor; nada me faltará.' },
+    verse: { reference: 'Salmos 23:1', query: 'Salmos 23:1' },
     media: {
       kind: 'photo',
       src: '/feed/nascer-do-sol-natal-rn-brasil-04.jpg',
@@ -54,7 +56,7 @@ export const reels: Reel[] = [
     duration: '0:54',
     amens: 41,
     comments: 7,
-    verse: { reference: 'Salmos 150:6', text: 'Tudo quanto tem fôlego louve ao Senhor. Louvai ao Senhor!' },
+    verse: { reference: 'Salmos 150:6', query: 'Salmos 150:6' },
     media: {
       kind: 'photo',
       src: '/feed/guitar-may-2009-1.jpg',
@@ -73,10 +75,7 @@ export const reels: Reel[] = [
     duration: '1:02',
     amens: 12,
     comments: 2,
-    verse: {
-      reference: 'Mateus 13:34',
-      text: 'Todas estas coisas falou Jesus às multidões por parábolas, e sem parábolas nada lhes falava;',
-    },
+    verse: { reference: 'Mateus 13:34', query: 'matthew 13:34' },
     media: {
       kind: 'photo',
       src: '/feed/biblia-sagrada-joao-ferreira-de-almeida-1899.jpg',
@@ -95,10 +94,7 @@ export const reels: Reel[] = [
     duration: '0:28',
     amens: 23,
     comments: 4,
-    verse: {
-      reference: 'Lamentações 3:22-23',
-      text: 'A benignidade do Senhor jamais acaba, as suas misericórdias não têm fim; renovam-se cada manhã. Grande é a tua fidelidade.',
-    },
+    verse: { reference: 'Lamentações 3:22-23', query: 'lamentations 3:22-23' },
     media: {
       kind: 'video',
       src: '/feed/sunrise-timelapse-30174294051.webm',
