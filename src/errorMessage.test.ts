@@ -24,6 +24,11 @@ test('429 e 413 do proxy, fora do envelope da API, ganham mensagem própria', ()
   expect(errorMessage(new ApiError(413, 'http_error', generic))).toBe('Os dados enviados são grandes demais.')
 })
 
+test('csrf_invalid que sobrou depois do retry pede para recarregar, sem jargão', () => {
+  const error = new ApiError(403, 'csrf_invalid', 'Sessão e token CSRF válidos são obrigatórios.')
+  expect(errorMessage(error)).toBe('Sua sessão expirou. Recarregue a página e tente de novo.')
+})
+
 test('erro que não veio da API vira mensagem genérica', () => {
   expect(errorMessage(new Error('boom'))).toBe('Erro inesperado. Tente novamente.')
 })
