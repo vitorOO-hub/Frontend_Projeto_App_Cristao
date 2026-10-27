@@ -1,13 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { login, type UserSelf } from '../api/auth.ts'
+import { Field, PasswordField } from '../components/Field.tsx'
+import Layout, { Spinner } from '../components/Layout.tsx'
 import { errorMessage } from '../errorMessage.ts'
+import { useFieldErrors } from '../useFieldErrors.ts'
 
 export default function Login({ onLogin }: { onLogin: (user: UserSelf) => void }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const fields = useFieldErrors()
 
   async function submit() {
     setLoading(true)
@@ -21,36 +25,55 @@ export default function Login({ onLogin }: { onLogin: (user: UserSelf) => void }
   }
 
   return (
-    <main>
-      <h1>Entrar</h1>
+    <Layout
+      title="Entre na sua conta"
+      sentence="Vídeos curtos de louvor, devocional e testemunho, cada um com o seu versículo."
+      nav={<Link to="/cadastro">Criar conta</Link>}
+    >
       <form
+        noValidate
         onSubmit={(event) => {
           event.preventDefault()
-          void submit()
+          if (fields.checkForm(event.currentTarget)) void submit()
         }}
       >
-        <label>
-          E-mail
-          <input type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-        </label>
-        <label>
-          Senha
-          <input
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
-        {error && <p role="alert">{error}</p>}
-        <button type="submit" disabled={loading}>
+        <Field
+          label="E-mail"
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+          value={email}
+          error={fields.errors.email}
+          onBlur={fields.onBlur}
+          onChange={(e) => {
+            setEmail(e.target.value)
+            fields.onChange(e)
+          }}
+        />
+        <PasswordField
+          label="Senha"
+          name="password"
+          autoComplete="current-password"
+          required
+          value={password}
+          error={fields.errors.password}
+          onBlur={fields.onBlur}
+          onChange={(e) => {
+            setPassword(e.target.value)
+            fields.onChange(e)
+          }}
+        />
+        {error && (
+          <p role="alert" className="alert">
+            {error}
+          </p>
+        )}
+        <button type="submit" className="button" disabled={loading}>
+          {loading && <Spinner />}
           {loading ? 'Entrando…' : 'Entrar'}
         </button>
       </form>
-      <p>
-        Não tem conta? <Link to="/cadastro">Cadastre-se</Link>
-      </p>
-    </main>
+    </Layout>
   )
 }
