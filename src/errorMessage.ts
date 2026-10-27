@@ -7,5 +7,14 @@ export function errorMessage(error: unknown, validationHint?: string): string {
   if (error.code === 'too_many_attempts' && error.retryAfter) {
     return `Muitas tentativas. Tente de novo em ${Math.ceil(error.retryAfter / 60)} min.`
   }
+  // Nginx responde 413/429 fora do envelope da API (docs/api.md): só o status identifica o caso.
+  if (error.code === 'http_error') {
+    if (error.status === 429) {
+      return error.retryAfter
+        ? `Muitas tentativas. Tente de novo em ${Math.ceil(error.retryAfter / 60)} min.`
+        : 'Muitas tentativas. Tente de novo em instantes.'
+    }
+    if (error.status === 413) return 'Os dados enviados são grandes demais.'
+  }
   return error.message
 }

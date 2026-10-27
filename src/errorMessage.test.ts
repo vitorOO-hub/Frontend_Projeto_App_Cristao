@@ -17,6 +17,13 @@ test('429 diz quantos minutos esperar', () => {
   expect(errorMessage(new ApiError(429, 'too_many_attempts', 'Muitas tentativas.', 61))).toBe('Muitas tentativas. Tente de novo em 2 min.')
 })
 
+test('429 e 413 do proxy, fora do envelope da API, ganham mensagem própria', () => {
+  const generic = 'Erro inesperado. Tente novamente.'
+  expect(errorMessage(new ApiError(429, 'http_error', generic))).toBe('Muitas tentativas. Tente de novo em instantes.')
+  expect(errorMessage(new ApiError(429, 'http_error', generic, 120))).toBe('Muitas tentativas. Tente de novo em 2 min.')
+  expect(errorMessage(new ApiError(413, 'http_error', generic))).toBe('Os dados enviados são grandes demais.')
+})
+
 test('erro que não veio da API vira mensagem genérica', () => {
   expect(errorMessage(new Error('boom'))).toBe('Erro inesperado. Tente novamente.')
 })
