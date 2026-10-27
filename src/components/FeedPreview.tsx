@@ -1,5 +1,9 @@
 import { useState } from 'react'
-import { type Media, reels } from '../feed.ts'
+import { getPassage, type Passage } from '../api/bible.ts'
+import { errorMessage } from '../errorMessage.ts'
+import { type Media, type Reel, reels } from '../feed.ts'
+
+type VerseState = { status: 'loading' } | { status: 'ok'; passage: Passage } | { status: 'error'; message: string }
 
 const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
 
@@ -32,7 +36,23 @@ export default function FeedPreview() {
   const [index, setIndex] = useState(0)
   const [said, setSaid] = useState<boolean[]>(() => reels.map(() => false))
   const [verseOpen, setVerseOpen] = useState(false)
+  // Um estado por vídeo: cada versículo é buscado uma vez no Flask e guardado.
+  const [verses, setVerses] = useState<Record<string, VerseState>>({})
   const reel = reels[index]
+  const verse = verses[reel.id]
+
+  function loadVerse(target: Reel) {
+    setVerses((all) => ({ ...all, [target.id]: { status: 'loading' } }))
+    getPassage(target.verse.query).then(
+      (passage) => setVerses((all) => ({ ...all, [target.id]: { status: 'ok', passage } })),
+      (error: unknown) => setVerses((all) => ({ ...all, [target.id]: { status: 'error', message: errorMessage(error) } })),
+    )
+  }
+
+  function toggleVerse() {
+    if (!verseOpen && (!verse || verse.status === 'error')) loadVerse(reel)
+    setVerseOpen((open) => !open)
+  }
   const amens = reel.amens + (said[index] ? 1 : 0)
   const upNext = [1, 2, 3].map((step) => (index + step) % reels.length)
   const show = (i: number) => {
@@ -53,17 +73,27 @@ export default function FeedPreview() {
             <p className="reel-author">@{reel.author}</p>
             <p className="reel-caption">{reel.caption}</p>
             {verseOpen && (
-              <blockquote className="reel-passage">
-                <p>{reel.verse.text}</p>
-                <cite>{reel.verse.reference} · Almeida</cite>
-              </blockquote>
+              <div className="reel-passage" aria-live="polite">
+                {verse?.status === 'ok' ? (
+                  <blockquote>
+                    <p>{verse.passage.text}</p>
+                    <cite>
+                      {verse.passage.reference} · {verse.passage.translation === 'almeida' ? 'Almeida' : verse.passage.translation}
+                    </cite>
+                  </blockquote>
+                ) : verse?.status === 'error' ? (
+                  <>
+                    <p>{verse.message}</p>
+                    <button type="button" className="reel-retry" onClick={() => loadVerse(reel)}>
+                      Tentar de novo
+                    </button>
+                  </>
+                ) : (
+                  <p>Carregando o versículo…</p>
+                )}
+              </div>
             )}
-            <button
-              type="button"
-              className="reel-verse"
-              aria-expanded={verseOpen}
-              onClick={() => setVerseOpen((open) => !open)}
-            >
+            <button type="button" className="reel-verse" aria-expanded={verseOpen} onClick={toggleVerse}>
               {reel.verse.reference}
             </button>
           </div>
