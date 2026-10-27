@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { flushSync } from 'react-dom'
 import { Link } from 'react-router'
 import { login, register, type UserSelf } from '../api/auth.ts'
 import { ApiError } from '../api/client.ts'
@@ -16,19 +17,29 @@ export default function Cadastro({ onLogin }: { onLogin: (user: UserSelf) => voi
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  // Conta já criada neste formulário (com quais dados), caso o login logo depois tenha falhado.
+  const [created, setCreated] = useState<{ email: string; password: string } | null>(null)
   const fields = useFieldErrors()
+  const accountExists = created?.email === email && created.password === password
 
-  async function submit() {
+  async function submit(form: HTMLFormElement) {
     setLoading(true)
     setError('')
-    try {
-      await register(name, email, password)
-    } catch (e) {
-      // E-mail repetido é problema do campo, não do formulário inteiro.
-      if (e instanceof ApiError && e.code === 'email_conflict') fields.setError('email', 'Este e-mail já tem uma conta. Tente entrar.')
-      else setError(errorMessage(e, RULES))
-      setLoading(false)
-      return
+    // Repetir o cadastro de uma conta que já existe só devolveria 409; neste caso basta tentar entrar.
+    if (!accountExists) {
+      try {
+        await register(name, email, password)
+        setCreated({ email, password })
+      } catch (e) {
+        // E-mail repetido é problema do campo, não do formulário inteiro.
+        if (e instanceof ApiError && e.code === 'email_conflict') {
+          flushSync(() => fields.setError('email', 'Este e-mail já tem uma conta. Tente entrar.'))
+          // Com o erro já na tela, o foco faz o leitor de tela anunciá-lo.
+          ;(form.elements.namedItem('email') as HTMLInputElement | null)?.focus()
+        } else setError(errorMessage(e, RULES))
+        setLoading(false)
+        return
+      }
     }
     try {
       onLogin(await login(email, password))
@@ -48,7 +59,7 @@ export default function Cadastro({ onLogin }: { onLogin: (user: UserSelf) => voi
         noValidate
         onSubmit={(event) => {
           event.preventDefault()
-          if (fields.checkForm(event.currentTarget)) void submit()
+          if (fields.checkForm(event.currentTarget)) void submit(event.currentTarget)
         }}
       >
         <Field
@@ -58,6 +69,8 @@ export default function Cadastro({ onLogin }: { onLogin: (user: UserSelf) => voi
           required
           minLength={2}
           maxLength={80}
+          // O servidor aplica trim: exige 2 caracteres que não sejam espaço nas pontas.
+          pattern="\s*\S[\s\S]*\S\s*"
           hint="É assim que você vai aparecer no app."
           value={name}
           error={fields.errors.name}
@@ -105,7 +118,7 @@ export default function Cadastro({ onLogin }: { onLogin: (user: UserSelf) => voi
         )}
         <button type="submit" className="button" disabled={loading}>
           {loading && <Spinner />}
-          {loading ? 'Criando conta…' : 'Criar conta'}
+          {loading ? (accountExists ? 'Entrando…' : 'Criando conta…') : accountExists ? 'Entrar' : 'Criar conta'}
         </button>
       </form>
     </Layout>
