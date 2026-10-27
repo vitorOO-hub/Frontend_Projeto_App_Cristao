@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { me, type UserSelf } from './api/auth.ts'
+import { Spinner } from './components/Layout.tsx'
 import Cadastro from './pages/Cadastro.tsx'
 import Home from './pages/Home.tsx'
 import Login from './pages/Login.tsx'
@@ -15,9 +16,10 @@ export default function App() {
 
   if (user === undefined) {
     return (
-      <main>
-        <p>Carregando…</p>
-      </main>
+      <div className="loading" role="status">
+        <Spinner />
+        Carregando…
+      </div>
     )
   }
 

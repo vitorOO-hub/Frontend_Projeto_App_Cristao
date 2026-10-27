@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { logout, type UserSelf } from '../api/auth.ts'
 import { ApiError } from '../api/client.ts'
+import Layout, { Spinner } from '../components/Layout.tsx'
 import { errorMessage } from '../errorMessage.ts'
 
 // Provisória até o feed (#17): mostra quem está logado e permite sair.
@@ -23,13 +24,28 @@ export default function Home({ user, onLogout }: { user: UserSelf; onLogout: () 
   }
 
   return (
-    <main>
-      <h1>Olá, {user.name}</h1>
-      <p>Você entrou como {user.email}.</p>
-      {error && <p role="alert">{error}</p>}
-      <button type="button" onClick={() => void sair()} disabled={loading}>
+    <Layout
+      title={`Olá, ${user.name.trim().split(/\s+/)[0]}`}
+      sentence="Os primeiros vídeos aprovados vão aparecer aqui. Enquanto isso, veja como vai ser o feed."
+    >
+      <div className="profile">
+        <span className="avatar" aria-hidden="true">
+          {user.name.trim().charAt(0).toUpperCase()}
+        </span>
+        <span>
+          <span className="profile-name">{user.name}</span>
+          <span className="profile-email">{user.email}</span>
+        </span>
+      </div>
+      {error && (
+        <p role="alert" className="alert">
+          {error}
+        </p>
+      )}
+      <button type="button" className="button" onClick={() => void sair()} disabled={loading}>
+        {loading && <Spinner />}
         {loading ? 'Saindo…' : 'Sair'}
       </button>
-    </main>
+    </Layout>
   )
 }
