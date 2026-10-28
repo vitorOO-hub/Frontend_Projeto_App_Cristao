@@ -738,6 +738,219 @@ a:focus-visible,
   }
 }
 
+/* Meus vídeos: uma coluna larga com grade de cards, sem o feed ao lado. */
+a.button {
+  text-decoration: none;
+}
+
+.vpage {
+  max-width: 1240px;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 24px var(--margin) var(--margin);
+}
+
+/* Sem foto atrás (as do feed exigem crédito): manchas de luz para o vidro ter o que refratar. */
+.vpage::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(60% 50% at 15% 8%, rgb(255 140 60 / 40%), transparent),
+    radial-gradient(50% 45% at 88% 25%, rgb(120 90 255 / 32%), transparent),
+    radial-gradient(70% 55% at 50% 105%, rgb(255 80 120 / 30%), transparent);
+}
+
+.vtopbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.vback {
+  display: inline-flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  font-size: var(--step-small);
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.vpanel {
+  padding: 36px 32px 32px;
+  border-radius: 32px;
+  animation: sheet-in 700ms var(--enter) both;
+}
+
+.vtitle {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.vfilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 24px;
+}
+
+.vfilter {
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: var(--step-small);
+  color: var(--text);
+  background: var(--field);
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.vfilter[aria-pressed='true'] {
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--text);
+}
+
+.vfilter:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+
+.vlist {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vcard {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--field);
+  border: 1px solid var(--glass-line);
+  border-radius: 24px;
+}
+
+.vthumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: rgb(255 255 255 / 6%);
+}
+
+.vthumb video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vdur {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 2px 10px;
+  font-size: var(--step-small);
+  background: rgb(0 0 0 / 60%);
+  border-radius: 999px;
+}
+
+.vbody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px 18px;
+}
+
+.vstatus {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 6px;
+  padding: 2px 12px;
+  font-size: var(--step-small);
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.vstatus-pending {
+  color: #ffe2a3;
+  background: rgb(255 200 80 / 20%);
+}
+
+.vstatus-approved {
+  color: #bff2d2;
+  background: rgb(90 220 140 / 20%);
+}
+
+.vstatus-rejected {
+  color: var(--error);
+  background: var(--error-bg);
+}
+
+.vcaption {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.vmeta {
+  margin: 0;
+  font-size: var(--step-small);
+  color: var(--soft);
+}
+
+.vreason {
+  margin: 4px 0 0;
+  padding: 12px 16px;
+  font-size: var(--step-small);
+  color: var(--error);
+  background: var(--error-bg);
+  border-radius: 16px;
+  overflow-wrap: anywhere;
+}
+
+.vreason strong {
+  display: block;
+}
+
+.vstate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  padding: 40px 0;
+  color: var(--soft);
+}
+
+.vstate-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.vmore {
+  width: auto;
+  margin: 24px auto 0;
+  padding: 0 28px;
+}
+
 /* Sem espaço para a fila ao lado do vídeo: só o vídeo. */
 @media (max-width: 1120px) {
   .stage-figure {
@@ -766,6 +979,19 @@ a:focus-visible,
 
   .topbar {
     margin-bottom: 14px;
+  }
+
+  .vpage {
+    padding: 14px var(--margin) 32px;
+  }
+
+  .vpanel {
+    padding: 24px 16px 20px;
+    border-radius: 28px;
+  }
+
+  .vback {
+    height: 42px;
   }
 
   .brand {

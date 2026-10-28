@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { logout, type UserSelf } from '../api/auth.ts'
 import { ApiError } from '../api/client.ts'
 import Layout, { Spinner } from '../components/Layout.tsx'
@@ -43,6 +44,9 @@ export default function Home({ user, onLogout }: { user: UserSelf; onLogout: () 
           {error}
         </p>
       )}
+      <Link to="/meus-videos" className="button">
+        Meus vídeos
+      </Link>
       <button type="button" className="button" onClick={() => void sair()} disabled={loading}>
         {loading && <Spinner />}
         {loading ? 'Saindo…' : 'Sair'}

@@ -45,6 +45,14 @@ test('GET não exige CSRF', async () => {
   expect(calls[0].headers['X-CSRF-Token']).toBeUndefined()
 })
 
+test('getPage devolve a paginação que get descarta', async () => {
+  const { api } = await load()
+  const pagination = { next_cursor: 'c1', has_more: true }
+  replies.push(json(200, { data: [{ id: 'v1' }], pagination }), json(200, { data: [{ id: 'v1' }], pagination }))
+  await expect(api.getPage('/me/videos')).resolves.toEqual({ data: [{ id: 'v1' }], pagination })
+  await expect(api.get('/me/videos')).resolves.toEqual([{ id: 'v1' }])
+})
+
 test('csrf_invalid renova o token e repete uma única vez', async () => {
   const { api } = await load()
   replies.push(csrf('t1'), csrfInvalid(), csrf('t2'), json(200, { data: { bio: 'oi' } }))

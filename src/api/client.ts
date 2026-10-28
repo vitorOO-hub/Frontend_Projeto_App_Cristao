@@ -21,6 +21,7 @@ export class ApiError extends Error {
 
 type Envelope = {
   data?: unknown
+  pagination?: unknown
   error?: { code?: string; message?: string }
 }
 
@@ -61,14 +62,17 @@ async function readEnvelope(response: Response): Promise<Envelope | null> {
   }
 }
 
-async function parse<T>(response: Response): Promise<T> {
+/** Listagem do contrato: `data` mais o cursor da próxima página. */
+export type Page<T> = { data: T[]; pagination: { next_cursor: string | null; has_more: boolean } }
+
+async function parse<T>(response: Response, page = false): Promise<T> {
   if (response.status === 204) return undefined as T
   const json = await readEnvelope(response)
   if (response.ok && json && 'data' in json) {
     // GET /auth/csrf e POST /auth/login devolvem um token novo; o anterior deixa de valer.
     const token = (json.data as { csrf_token?: unknown } | null)?.csrf_token
     if (typeof token === 'string') csrfToken = token
-    return json.data as T
+    return (page ? { data: json.data, pagination: json.pagination } : json.data) as T
   }
   const retryAfter = Number(response.headers.get('Retry-After'))
   throw new ApiError(
@@ -95,7 +99,7 @@ export function refreshCsrf(): Promise<void> {
   return csrfRequest
 }
 
-async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+async function request<T>(method: string, path: string, body?: unknown, page = false): Promise<T> {
   const mutating = MUTATING.has(method)
   if (mutating && !csrfToken) await refreshCsrf()
   const usedToken = csrfToken
@@ -110,11 +114,13 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
       response = await send(method, path, body)
     }
   }
-  return parse<T>(response)
+  return parse<T>(response, page)
 }
 
 export const api = {
   get: <T>(path: string) => request<T>('GET', path),
+  /** GET de listagem: devolve também `pagination`, que `get` descarta. */
+  getPage: <T>(path: string) => request<Page<T>>('GET', path, undefined, true),
   post: <T>(path: string, body?: unknown) => request<T>('POST', path, body),
   put: <T>(path: string, body?: unknown) => request<T>('PUT', path, body),
   patch: <T>(path: string, body?: unknown) => request<T>('PATCH', path, body),

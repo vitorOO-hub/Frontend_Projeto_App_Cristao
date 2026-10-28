@@ -14,13 +14,7 @@ export default function Layout({ title, sentence, nav, children }: LayoutProps) 
   return (
     <div className="shell">
       <header className="topbar">
-        <span className="brand glass">
-          <svg className="brand-mark" viewBox="0 0 18 28" width="18" height="28" aria-hidden="true">
-            <rect width="18" height="28" rx="5" fill="#ffffff" />
-            <path d="M6.5 9.5v9l7-4.5-7-4.5Z" fill="#0d0d10" />
-          </svg>
-          App Cristão
-        </span>
+        <Brand />
       </header>
       <main className="side glass">
         <h1 className="headline">{title}</h1>
@@ -32,6 +26,18 @@ export default function Layout({ title, sentence, nav, children }: LayoutProps) 
         <FeedPreview />
       </aside>
     </div>
+  )
+}
+
+export function Brand() {
+  return (
+    <span className="brand glass">
+      <svg className="brand-mark" viewBox="0 0 18 28" width="18" height="28" aria-hidden="true">
+        <rect width="18" height="28" rx="5" fill="#ffffff" />
+        <path d="M6.5 9.5v9l7-4.5-7-4.5Z" fill="#0d0d10" />
+      </svg>
+      App Cristão
+    </span>
   )
 }
 
