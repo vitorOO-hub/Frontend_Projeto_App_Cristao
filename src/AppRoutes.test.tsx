@@ -8,13 +8,12 @@ import type { UserSelf } from './api/auth.ts'
 import AppRoutes from './AppRoutes.tsx'
 
 vi.mock('./pages/Home.tsx', () => ({ default: () => <p>tela inicial</p> }))
-vi.mock('./pages/MeusVideos.tsx', () => ({
-  default: function MeusVideos() {
+vi.mock('./pages/Perfil.tsx', () => ({
+  default: function Perfil() {
     const { pathname, search } = useLocation()
-    return <p>{`tela meus vídeos em ${pathname}${search}`}</p>
+    return <p>{`tela de perfil em ${pathname}${search}`}</p>
   },
 }))
-vi.mock('./pages/Perfil.tsx', () => ({ default: () => <p>tela de perfil</p> }))
 vi.mock('./pages/Lives.tsx', () => ({ default: () => <p>tela de lives</p> }))
 vi.mock('./pages/Cadastro.tsx', () => ({ default: () => <p>tela de cadastro</p> }))
 vi.mock('./pages/Login.tsx', () => ({
@@ -37,7 +36,7 @@ function open(path: string, user: UserSelf | null) {
   )
 }
 
-test.each(['/', '/meus-videos', '/lives', '/perfil'])('visitante em %s é levado para o login', (path) => {
+test.each(['/', '/perfil', '/lives'])('visitante em %s é levado para o login', (path) => {
   open(path, null)
   expect(screen.getByText('tela de login')).toBeTruthy()
 })
@@ -53,8 +52,8 @@ test.each(['/login', '/cadastro'])('quem já entrou em %s vai para o início', (
 })
 
 test('quem entrou acessa a rota protegida', () => {
-  open('/meus-videos', maria)
-  expect(screen.getByText('tela meus vídeos em /meus-videos')).toBeTruthy()
+  open('/perfil', maria)
+  expect(screen.getByText('tela de perfil em /perfil')).toBeTruthy()
 })
 
 function Harness() {
@@ -65,12 +64,12 @@ function Harness() {
 test('depois de entrar, volta para a página que o visitante tentou abrir', async () => {
   const typed = userEvent.setup()
   render(
-    <MemoryRouter initialEntries={['/meus-videos?aba=rejeitados']}>
+    <MemoryRouter initialEntries={['/perfil?aba=rejeitados']}>
       <Harness />
     </MemoryRouter>,
   )
   await typed.click(screen.getByText('tela de login'))
-  expect(screen.getByText('tela meus vídeos em /meus-videos?aba=rejeitados')).toBeTruthy()
+  expect(screen.getByText('tela de perfil em /perfil?aba=rejeitados')).toBeTruthy()
 })
 
 test('entrar direto pelo login leva ao início', async () => {
@@ -89,7 +88,8 @@ test('quem entrou acessa as lives', () => {
   expect(screen.getByText('tela de lives')).toBeTruthy()
 })
 
-test('quem entrou acessa o perfil', () => {
-  open('/perfil', maria)
-  expect(screen.getByText('tela de perfil')).toBeTruthy()
+
+test('o endereço antigo de Meus vídeos leva ao perfil', () => {
+  open('/meus-videos', maria)
+  expect(screen.getByText('tela de perfil em /perfil')).toBeTruthy()
 })

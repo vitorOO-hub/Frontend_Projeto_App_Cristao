@@ -15,12 +15,12 @@ vi.mock('./api/client.ts', () => ({
   },
 }))
 vi.mock('./pages/Home.tsx', () => ({ default: () => <p>tela inicial</p> }))
-vi.mock('./pages/MeusVideos.tsx', () => ({ default: () => <p>tela meus vídeos</p> }))
+vi.mock('./pages/Perfil.tsx', () => ({ default: () => <p>tela de perfil</p> }))
 vi.mock('./pages/Cadastro.tsx', () => ({ default: () => <p>tela de cadastro</p> }))
 vi.mock('./pages/Login.tsx', () => ({ default: ({ notice }: { notice?: string }) => <p>{`tela de login ${notice ?? ''}`.trim()}</p> }))
 
 beforeEach(async () => {
-  window.history.pushState({}, '', '/meus-videos')
+  window.history.pushState({}, '', '/perfil')
   const { me } = await import('./api/auth.ts')
   vi.mocked(me).mockResolvedValue(maria)
 })
@@ -28,7 +28,7 @@ afterEach(cleanup)
 
 test('sessão que expira com o app aberto leva ao login com um aviso', async () => {
   render(<App />)
-  expect(await screen.findByText('tela meus vídeos')).toBeTruthy()
+  expect(await screen.findByText('tela de perfil')).toBeTruthy()
 
   act(() => expire())
 

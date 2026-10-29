@@ -71,7 +71,7 @@ const open = () =>
     </MemoryRouter>,
   )
 
-const tab = (name: string) => screen.getByRole('tab', { name: new RegExp(name) })
+const tab = (name: string) => screen.getByRole('tab', { name })
 
 test('mostra quem é o usuário e os cinco números vindos da API', async () => {
   open()
@@ -79,18 +79,19 @@ test('mostra quem é o usuário e os cinco números vindos da API', async () => 
   expect(screen.getByText('@maria')).toBeTruthy()
   expect(screen.getByText('Louvor e café.')).toBeTruthy()
   const stats = within(screen.getByRole('list', { name: 'Números do perfil' }))
-  expect(stats.getByText('3').parentElement?.textContent).toContain('Vídeos')
+  expect(stats.getByText('3').parentElement?.textContent).toContain('Vídeos aprovados')
   expect(stats.getByText('12').parentElement?.textContent).toContain('Amens recebidos')
   expect(stats.getByText('5').parentElement?.textContent).toContain('Curtidos')
   expect(stats.getByText('7').parentElement?.textContent).toContain('Seguidores')
   expect(stats.getByText('4').parentElement?.textContent).toContain('Seguindo')
 })
 
-test('abre na aba Vídeos com só os aprovados do próprio usuário', async () => {
+test('abre na aba Meus vídeos, com os vídeos do usuário em qualquer situação', async () => {
   open()
   expect(await screen.findByText('Louvor da manhã')).toBeTruthy()
-  expect(myVideos).toHaveBeenCalledWith('approved', undefined)
-  expect(tab('Vídeos').getAttribute('aria-selected')).toBe('true')
+  expect(myVideos).toHaveBeenCalledWith(undefined, undefined)
+  expect(tab('Meus vídeos').getAttribute('aria-selected')).toBe('true')
+  expect(screen.getByRole('button', { name: 'Rejeitados' })).toBeTruthy()
   expect(reactedVideos).not.toHaveBeenCalled()
 })
 
@@ -114,7 +115,7 @@ test('cada aba busca o que é dela, só quando é aberta', async () => {
 })
 
 test.each([
-  ['Vídeos', 'Você ainda não tem vídeos aprovados.'],
+  ['Meus vídeos', 'Você ainda não publicou nenhum vídeo.'],
   ['Curtidos', 'Você ainda não disse Amém a nenhum vídeo.'],
   ['Seguidores', 'Ninguém segue você ainda.'],
   ['Seguindo', 'Você ainda não segue ninguém.'],
@@ -177,7 +178,7 @@ test('as setas trocam de aba e levam o foco junto', async () => {
   const typed = userEvent.setup()
   open()
   await screen.findByText('Louvor da manhã')
-  tab('Vídeos').focus()
+  tab('Meus vídeos').focus()
   await typed.keyboard('{ArrowRight}')
   expect(tab('Curtidos').getAttribute('aria-selected')).toBe('true')
   expect(document.activeElement).toBe(tab('Curtidos'))

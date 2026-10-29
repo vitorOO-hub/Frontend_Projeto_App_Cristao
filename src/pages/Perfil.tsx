@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type Reac
 import { Link } from 'react-router'
 import type { Page } from '../api/client.ts'
 import { myFollowers, myFollowing, myProfile, reactedVideos, type Profile, type UserPublic } from '../api/profile.ts'
-import { myVideos } from '../api/videos.ts'
 import { CATEGORIES } from '../categories.ts'
 import { Brand, Spinner } from '../components/Layout.tsx'
+import MeusVideosPanel from '../components/MeusVideosPanel.tsx'
 import { errorMessage } from '../errorMessage.ts'
 import { duration } from '../format.ts'
 import { usePagedList } from '../usePagedList.ts'
@@ -20,8 +20,6 @@ type VideoItem = {
   author?: UserPublic
 }
 
-const published = (cursor?: string) => myVideos('approved', cursor)
-
 type Tab = {
   id: string
   label: string
@@ -31,8 +29,8 @@ type Tab = {
 const tabs: Tab[] = [
   {
     id: 'videos',
-    label: 'Vídeos',
-    panel: () => <VideoPanel fetch={published} empty="Você ainda não tem vídeos aprovados." />,
+    label: 'Meus vídeos',
+    panel: () => <MeusVideosPanel />,
   },
   {
     id: 'curtidos',
@@ -52,7 +50,7 @@ const tabs: Tab[] = [
 ]
 
 const STATS: { label: string; stat: keyof Profile['counts'] }[] = [
-  { label: 'Vídeos', stat: 'videos' },
+  { label: 'Vídeos aprovados', stat: 'videos' },
   { label: 'Amens recebidos', stat: 'amens_received' },
   { label: 'Curtidos', stat: 'reacted' },
   { label: 'Seguidores', stat: 'followers' },

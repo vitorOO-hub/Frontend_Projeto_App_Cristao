@@ -5,7 +5,6 @@ import Cadastro from './pages/Cadastro.tsx'
 import Home from './pages/Home.tsx'
 import Lives from './pages/Lives.tsx'
 import Login from './pages/Login.tsx'
-import MeusVideos from './pages/MeusVideos.tsx'
 import Perfil from './pages/Perfil.tsx'
 
 type AppRoutesProps = {
@@ -41,14 +40,8 @@ export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
           <RequireAuth signedIn={signedIn}>{user && <Home user={user} onLogout={() => setUser(null)} />}</RequireAuth>
         }
       />
-      <Route
-        path="/meus-videos"
-        element={
-          <RequireAuth signedIn={signedIn}>
-            <MeusVideos />
-          </RequireAuth>
-        }
-      />
+      {/* Meus vídeos agora é uma aba do perfil; o endereço antigo continua funcionando. */}
+      <Route path="/meus-videos" element={<Navigate to="/perfil" replace />} />
       <Route
         path="/perfil"
         element={

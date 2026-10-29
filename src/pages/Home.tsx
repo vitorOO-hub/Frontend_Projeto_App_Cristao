@@ -50,9 +50,6 @@ export default function Home({ user, onLogout }: { user: UserSelf; onLogout: () 
       <Link to="/lives" className="button">
         Lives
       </Link>
-      <Link to="/meus-videos" className="button">
-        Meus vídeos
-      </Link>
       <button type="button" className="button" onClick={() => void sair()} disabled={loading}>
         {loading && <Spinner />}
         {loading ? 'Saindo…' : 'Sair'}

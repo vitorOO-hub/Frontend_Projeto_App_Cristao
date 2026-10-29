@@ -1,11 +1,10 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import { ApiError } from '../api/client.ts'
 import { myVideos, type VideoOwn } from '../api/videos.ts'
-import MeusVideos from './MeusVideos.tsx'
+import MeusVideosPanel from './MeusVideosPanel.tsx'
 
 vi.mock('../api/videos.ts', () => ({ myVideos: vi.fn() }))
 
@@ -27,12 +26,7 @@ const page = (data: VideoOwn[], next: string | null = null) => ({ data, paginati
 beforeEach(() => vi.mocked(myVideos).mockReset())
 afterEach(cleanup)
 
-const open = () =>
-  render(
-    <MemoryRouter>
-      <MeusVideos />
-    </MemoryRouter>,
-  )
+const open = () => render(<MeusVideosPanel />)
 
 test('mostra o status de cada vídeo e o motivo só no rejeitado', async () => {
   vi.mocked(myVideos).mockResolvedValue(
@@ -96,4 +90,15 @@ test('trocar de aba busca com o status certo e sem cursor', async () => {
   expect(await screen.findByText('Legenda c')).toBeTruthy()
   expect(myVideos).toHaveBeenLastCalledWith('rejected', undefined)
   expect(screen.queryByText('Legenda a')).toBeNull()
+})
+
+test('cada vídeo mostra a sua categoria', async () => {
+  vi.mocked(myVideos).mockResolvedValue(
+    page([{ ...video('a', 'approved'), category: 'estudo-biblico' }, { ...video('b', 'pending'), category: 'humor' }]),
+  )
+  open()
+
+  const cards = await screen.findAllByRole('listitem')
+  expect(within(cards[0]).getByText('Estudo bíblico')).toBeTruthy()
+  expect(within(cards[1]).getByText('Humor')).toBeTruthy()
 })

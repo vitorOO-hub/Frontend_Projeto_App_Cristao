@@ -12,7 +12,7 @@ const maria: UserSelf = { id: 'u1', name: 'Maria', username: null, email: 'maria
 
 afterEach(cleanup)
 
-test('a página inicial leva às lives e aos vídeos do usuário', () => {
+test('a página inicial leva ao perfil e às lives', () => {
   render(
     <MemoryRouter>
       <Home user={maria} onLogout={vi.fn()} />
@@ -20,5 +20,5 @@ test('a página inicial leva às lives e aos vídeos do usuário', () => {
   )
   expect(screen.getByRole('link', { name: 'Perfil' }).getAttribute('href')).toBe('/perfil')
   expect(screen.getByRole('link', { name: 'Lives' }).getAttribute('href')).toBe('/lives')
-  expect(screen.getByRole('link', { name: 'Meus vídeos' }).getAttribute('href')).toBe('/meus-videos')
+  expect(screen.queryByRole('link', { name: 'Meus vídeos' })).toBeNull()
 })

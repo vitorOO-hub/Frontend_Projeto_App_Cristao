@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router'
 import { myVideos, type VideoOwn, type VideoStatus } from '../api/videos.ts'
 import { CATEGORIES } from '../categories.ts'
-import { Brand, Spinner } from '../components/Layout.tsx'
+import { Spinner } from './Layout.tsx'
 import { errorMessage } from '../errorMessage.ts'
 import { duration } from '../format.ts'
 
@@ -19,7 +18,8 @@ const FILTERS: { label: string; status?: VideoStatus }[] = [
   { label: 'Rejeitados', status: 'rejected' },
 ]
 
-export default function MeusVideos() {
+/** Os vídeos do próprio usuário em qualquer situação (em análise, aprovado, rejeitado), para a aba do perfil. */
+export default function MeusVideosPanel() {
   const [status, setStatus] = useState<VideoStatus | undefined>()
   const [items, setItems] = useState<VideoOwn[]>([])
   const [next, setNext] = useState<string | null>(null)
@@ -55,16 +55,8 @@ export default function MeusVideos() {
   }, [status, load])
 
   return (
-    <div className="vpage">
-      <header className="topbar vtopbar">
-        <Brand />
-        <Link to="/" className="glass vback">
-          ← Início
-        </Link>
-      </header>
-      <main className="glass vpanel">
-        <h1 className="vtitle">Meus vídeos</h1>
-        <p className="lead">Acompanhe a revisão dos vídeos que você publicou. Só os aprovados aparecem no feed.</p>
+    <>
+      <p className="lead">Acompanhe a revisão dos vídeos que você publicou. Só os aprovados aparecem no feed.</p>
         <div className="vfilters" role="group" aria-label="Filtrar por situação">
           {FILTERS.map((filter) => (
             <button
@@ -89,14 +81,15 @@ export default function MeusVideos() {
                   <span className="vdur">{duration(video.duration_seconds)}</span>
                 </div>
                 <div className="vbody">
-                  <span className={`vstatus vstatus-${video.status}`}>
-                    <span aria-hidden="true">{STATUS[video.status].icon}</span>
-                    {STATUS[video.status].label}
-                  </span>
+                  <div className="vtags">
+                    <span className={`vstatus vstatus-${video.status}`}>
+                      <span aria-hidden="true">{STATUS[video.status].icon}</span>
+                      {STATUS[video.status].label}
+                    </span>
+                    <span className="vtag">{CATEGORIES[video.category] ?? video.category}</span>
+                  </div>
                   <p className="vcaption">{video.caption}</p>
-                  <p className="vmeta">
-                    {CATEGORIES[video.category] ?? video.category} · {new Date(video.created_at).toLocaleDateString('pt-BR')}
-                  </p>
+                  <p className="vmeta">{new Date(video.created_at).toLocaleDateString('pt-BR')}</p>
                   {video.status === 'rejected' && (
                     <p className="vreason" role="note">
                       <strong>Motivo da rejeição</strong>
@@ -133,7 +126,6 @@ export default function MeusVideos() {
             Carregar mais
           </button>
         )}
-      </main>
-    </div>
+    </>
   )
 }
