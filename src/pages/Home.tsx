@@ -44,6 +44,9 @@ export default function Home({ user, onLogout }: { user: UserSelf; onLogout: () 
           {error}
         </p>
       )}
+      <Link to="/perfil" className="button">
+        Perfil
+      </Link>
       <Link to="/lives" className="button">
         Lives
       </Link>

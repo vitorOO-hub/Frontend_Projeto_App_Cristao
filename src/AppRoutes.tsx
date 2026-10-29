@@ -6,6 +6,7 @@ import Home from './pages/Home.tsx'
 import Lives from './pages/Lives.tsx'
 import Login from './pages/Login.tsx'
 import MeusVideos from './pages/MeusVideos.tsx'
+import Perfil from './pages/Perfil.tsx'
 
 type AppRoutesProps = {
   user: UserSelf | null
@@ -45,6 +46,14 @@ export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
         element={
           <RequireAuth signedIn={signedIn}>
             <MeusVideos />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/perfil"
+        element={
+          <RequireAuth signedIn={signedIn}>
+            <Perfil />
           </RequireAuth>
         }
       />
