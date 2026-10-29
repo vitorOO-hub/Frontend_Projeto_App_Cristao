@@ -1091,3 +1091,87 @@ a.button {
   border: 1px solid var(--glass-line);
   border-radius: 999px;
 }
+
+/* Perfil do usuário logado: cabeçalho, números e abas (as abas reaproveitam os chips de Meus vídeos). */
+.pheader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.pavatar {
+  width: 88px;
+  height: 88px;
+  font-size: 2rem;
+}
+
+.pinfo {
+  min-width: 0;
+}
+
+.ptitle {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.75rem);
+  font-weight: 900;
+  line-height: 1.05;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.pusername,
+.pbio {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.pusername,
+.pbio-empty {
+  color: var(--soft);
+}
+
+.pstats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--soft);
+}
+
+.pstats strong {
+  color: var(--text);
+}
+
+.vfilter[aria-selected='true'] {
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--text);
+}
+
+.ulist {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.uitem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--field);
+  border: 1px solid var(--glass-line);
+  border-radius: 24px;
+}
+
+@media (max-width: 560px) {
+  .pheader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
