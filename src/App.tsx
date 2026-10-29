@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import { BrowserRouter } from 'react-router'
 import { me, type UserSelf } from './api/auth.ts'
+import AppRoutes from './AppRoutes.tsx'
 import { Spinner } from './components/Layout.tsx'
-import Cadastro from './pages/Cadastro.tsx'
-import Home from './pages/Home.tsx'
-import Login from './pages/Login.tsx'
-import MeusVideos from './pages/MeusVideos.tsx'
 
 export default function App() {
   // undefined: ainda consultando GET /me; null: ninguém logado.
@@ -26,13 +23,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={user ? <Home user={user} onLogout={() => setUser(null)} /> : <Navigate to="/login" replace />} />
-        <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login onLogin={setUser} />} />
-        <Route path="/cadastro" element={user ? <Navigate to="/" replace /> : <Cadastro onLogin={setUser} />} />
-        <Route path="/meus-videos" element={user ? <MeusVideos /> : <Navigate to="/login" replace />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <AppRoutes user={user} setUser={setUser} />
     </BrowserRouter>
   )
 }
