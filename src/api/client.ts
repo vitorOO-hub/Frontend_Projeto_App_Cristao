@@ -26,6 +26,15 @@ type Envelope = {
 }
 
 let csrfToken: string | null = null
+let unauthenticatedListener: (() => void) | null = null
+
+/** Avisa quando o servidor diz que não há sessão (expirou ou foi encerrada); devolve como parar de escutar. */
+export function onUnauthenticated(listener: () => void): () => void {
+  unauthenticatedListener = listener
+  return () => {
+    if (unauthenticatedListener === listener) unauthenticatedListener = null
+  }
+}
 let csrfRequest: Promise<void> | null = null
 
 async function send(method: string, path: string, body?: unknown): Promise<Response> {
@@ -74,10 +83,16 @@ async function parse<T>(response: Response, page = false): Promise<T> {
     if (typeof token === 'string') csrfToken = token
     return (page ? { data: json.data, pagination: json.pagination } : json.data) as T
   }
+  const code = json?.error?.code ?? 'http_error'
+  // Só `unauthenticated`: senha errada no login também é 401, mas não é sessão que acabou.
+  if (response.status === 401 && code === 'unauthenticated') {
+    csrfToken = null
+    unauthenticatedListener?.()
+  }
   const retryAfter = Number(response.headers.get('Retry-After'))
   throw new ApiError(
     response.status,
-    json?.error?.code ?? 'http_error',
+    code,
     json?.error?.message ?? 'Erro inesperado. Tente novamente.',
     retryAfter > 0 ? retryAfter : null,
   )

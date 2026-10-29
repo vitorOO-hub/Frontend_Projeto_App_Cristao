@@ -6,9 +6,14 @@ import Home from './pages/Home.tsx'
 import Login from './pages/Login.tsx'
 import MeusVideos from './pages/MeusVideos.tsx'
 
-type AppRoutesProps = { user: UserSelf | null; setUser: (user: UserSelf | null) => void }
+type AppRoutesProps = {
+  user: UserSelf | null
+  setUser: (user: UserSelf | null) => void
+  /** Aviso para a tela de login (ex.: a sessão expirou). */
+  notice?: string
+}
 
-export default function AppRoutes({ user, setUser }: AppRoutesProps) {
+export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
   const signedIn = user !== null
   return (
     <Routes>
@@ -16,7 +21,7 @@ export default function AppRoutes({ user, setUser }: AppRoutesProps) {
         path="/login"
         element={
           <GuestOnly signedIn={signedIn}>
-            <Login onLogin={setUser} />
+            <Login onLogin={setUser} notice={notice} />
           </GuestOnly>
         }
       />

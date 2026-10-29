@@ -175,3 +175,32 @@ test('logout esquece o token CSRF da sessão encerrada', async () => {
   ])
   expect(calls[4].headers['X-CSRF-Token']).toBe('anon2')
 })
+
+const unauthenticated = () => json(401, { error: { code: 'unauthenticated', message: 'Autenticação necessária.' } })
+
+test('401 unauthenticated avisa quem escuta, e o erro continua chegando à tela', async () => {
+  const { api, onUnauthenticated } = await load()
+  const listener = vi.fn()
+  onUnauthenticated(listener)
+  replies.push(unauthenticated())
+  await expect(api.get('/me/videos')).rejects.toMatchObject({ status: 401, code: 'unauthenticated' })
+  expect(listener).toHaveBeenCalledTimes(1)
+})
+
+test('senha errada (401 invalid_credentials) não é sessão expirada', async () => {
+  const { api, onUnauthenticated } = await load()
+  const listener = vi.fn()
+  onUnauthenticated(listener)
+  replies.push(csrf('t1'), json(401, { error: { code: 'invalid_credentials', message: 'E-mail, usuário ou senha incorretos.' } }))
+  await expect(api.post('/auth/login', { login: 'a', password: 'b' })).rejects.toMatchObject({ code: 'invalid_credentials' })
+  expect(listener).not.toHaveBeenCalled()
+})
+
+test('quem parou de escutar não é mais avisado', async () => {
+  const { api, onUnauthenticated } = await load()
+  const listener = vi.fn()
+  onUnauthenticated(listener)()
+  replies.push(unauthenticated())
+  await expect(api.get('/me')).rejects.toBeInstanceOf(Error)
+  expect(listener).not.toHaveBeenCalled()
+})

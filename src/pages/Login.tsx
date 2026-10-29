@@ -6,7 +6,7 @@ import Layout, { Spinner } from '../components/Layout.tsx'
 import { errorMessage } from '../errorMessage.ts'
 import { useFieldErrors } from '../useFieldErrors.ts'
 
-export default function Login({ onLogin }: { onLogin: (user: UserSelf) => void }) {
+export default function Login({ onLogin, notice }: { onLogin: (user: UserSelf) => void; notice?: string }) {
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -70,6 +70,11 @@ export default function Login({ onLogin }: { onLogin: (user: UserSelf) => void }
             fields.onChange(e)
           }}
         />
+        {notice && !error && (
+          <p role="status" className="alert">
+            {notice}
+          </p>
+        )}
         {error && (
           <p role="alert" className="alert">
             {error}
