@@ -4,6 +4,7 @@ import { myVideos, type VideoOwn, type VideoStatus } from '../api/videos.ts'
 import { CATEGORIES } from '../categories.ts'
 import { Brand, Spinner } from '../components/Layout.tsx'
 import { errorMessage } from '../errorMessage.ts'
+import { duration } from '../format.ts'
 
 const STATUS: Record<VideoStatus, { label: string; icon: string }> = {
   pending: { label: 'Em análise', icon: '●' },
@@ -17,11 +18,6 @@ const FILTERS: { label: string; status?: VideoStatus }[] = [
   { label: 'Aprovados', status: 'approved' },
   { label: 'Rejeitados', status: 'rejected' },
 ]
-
-function duration(seconds: number) {
-  const total = Math.round(seconds)
-  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`
-}
 
 export default function MeusVideos() {
   const [status, setStatus] = useState<VideoStatus | undefined>()
