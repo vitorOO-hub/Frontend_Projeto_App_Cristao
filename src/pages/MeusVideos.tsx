@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { myVideos, type VideoOwn, type VideoStatus } from '../api/videos.ts'
+import { CATEGORIES } from '../categories.ts'
 import { Brand, Spinner } from '../components/Layout.tsx'
 import { errorMessage } from '../errorMessage.ts'
 
@@ -16,14 +17,6 @@ const FILTERS: { label: string; status?: VideoStatus }[] = [
   { label: 'Aprovados', status: 'approved' },
   { label: 'Rejeitados', status: 'rejected' },
 ]
-
-const CATEGORIES: Record<string, string> = {
-  louvor: 'Louvor',
-  devocional: 'Devocional',
-  testemunho: 'Testemunho',
-  humor: 'Humor',
-  'estudo-biblico': 'Estudo bíblico',
-}
 
 function duration(seconds: number) {
   const total = Math.round(seconds)

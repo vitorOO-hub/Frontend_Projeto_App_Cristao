@@ -3,6 +3,7 @@ import type { UserSelf } from './api/auth.ts'
 import { GuestOnly, RequireAuth } from './components/RouteGuards.tsx'
 import Cadastro from './pages/Cadastro.tsx'
 import Home from './pages/Home.tsx'
+import Lives from './pages/Lives.tsx'
 import Login from './pages/Login.tsx'
 import MeusVideos from './pages/MeusVideos.tsx'
 
@@ -44,6 +45,14 @@ export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
         element={
           <RequireAuth signedIn={signedIn}>
             <MeusVideos />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lives"
+        element={
+          <RequireAuth signedIn={signedIn}>
+            <Lives />
           </RequireAuth>
         }
       />

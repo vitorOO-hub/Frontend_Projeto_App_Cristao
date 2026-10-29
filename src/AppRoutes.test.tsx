@@ -14,6 +14,7 @@ vi.mock('./pages/MeusVideos.tsx', () => ({
     return <p>{`tela meus vídeos em ${pathname}${search}`}</p>
   },
 }))
+vi.mock('./pages/Lives.tsx', () => ({ default: () => <p>tela de lives</p> }))
 vi.mock('./pages/Cadastro.tsx', () => ({ default: () => <p>tela de cadastro</p> }))
 vi.mock('./pages/Login.tsx', () => ({
   default: ({ onLogin }: { onLogin: (user: UserSelf) => void }) => (
@@ -35,7 +36,7 @@ function open(path: string, user: UserSelf | null) {
   )
 }
 
-test.each(['/', '/meus-videos'])('visitante em %s é levado para o login', (path) => {
+test.each(['/', '/meus-videos', '/lives'])('visitante em %s é levado para o login', (path) => {
   open(path, null)
   expect(screen.getByText('tela de login')).toBeTruthy()
 })
@@ -80,4 +81,9 @@ test('entrar direto pelo login leva ao início', async () => {
   )
   await typed.click(screen.getByText('tela de login'))
   expect(screen.getByText('tela inicial')).toBeTruthy()
+})
+
+test('quem entrou acessa as lives', () => {
+  open('/lives', maria)
+  expect(screen.getByText('tela de lives')).toBeTruthy()
 })

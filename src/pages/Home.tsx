@@ -44,6 +44,9 @@ export default function Home({ user, onLogout }: { user: UserSelf; onLogout: () 
           {error}
         </p>
       )}
+      <Link to="/lives" className="button">
+        Lives
+      </Link>
       <Link to="/meus-videos" className="button">
         Meus vídeos
       </Link>

@@ -1072,3 +1072,22 @@ a.button {
     animation-iteration-count: infinite !important;
   }
 }
+
+/* Lives: o segundo grupo de filtros fica logo abaixo do primeiro, e "Em breve" marca o que ainda não existe. */
+.vfilters-church {
+  margin-top: -12px;
+}
+
+.vfilter:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.vsoon {
+  margin-left: 6px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  color: var(--soft);
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+}
