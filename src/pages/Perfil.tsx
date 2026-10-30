@@ -24,7 +24,7 @@ type VideoItem = {
 type Tab = {
   id: string
   label: string
-  panel: () => ReactNode
+  panel: (selfId: string) => ReactNode
 }
 
 const tabs: Tab[] = [
@@ -36,7 +36,9 @@ const tabs: Tab[] = [
   {
     id: 'curtidos',
     label: 'Curtidos',
-    panel: () => <VideoPanel fetch={reactedVideos} empty="Você ainda não disse Amém a nenhum vídeo." showAuthor />,
+    panel: (selfId) => (
+      <VideoPanel fetch={reactedVideos} empty="Você ainda não disse Amém a nenhum vídeo." showAuthor selfId={selfId} />
+    ),
   },
   {
     id: 'seguidores',
@@ -163,7 +165,7 @@ export default function Perfil() {
               ))}
             </div>
             <div role="tabpanel" id="painel-perfil" aria-labelledby={`aba-${tab.id}`} tabIndex={0}>
-              <div key={tab.id}>{tab.panel()}</div>
+              <div key={tab.id}>{tab.panel(profile.user.id)}</div>
             </div>
           </>
         )}
@@ -190,10 +192,13 @@ function VideoPanel({
   fetch,
   empty,
   showAuthor = false,
+  selfId,
 }: {
   fetch: (cursor?: string) => Promise<Page<VideoItem>>
   empty: string
   showAuthor?: boolean
+  /** Com o id de quem está logado, cada vídeo de outra pessoa ganha o link "Denunciar". */
+  selfId?: string
 }) {
   const list = usePagedList(fetch)
   return (
@@ -213,6 +218,11 @@ function VideoPanel({
                   {showAuthor && video.author && `${video.author.name} · `}
                   {CATEGORIES[video.category] ?? video.category} · {new Date(video.created_at).toLocaleDateString('pt-BR')}
                 </p>
+                {selfId && video.author && video.author.id !== selfId && (
+                  <Link className="vreport" to={`/videos/${video.id}/denunciar`} state={{ caption: video.caption }}>
+                    Denunciar
+                  </Link>
+                )}
               </div>
             </li>
           ))}

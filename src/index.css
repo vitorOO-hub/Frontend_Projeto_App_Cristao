@@ -1194,3 +1194,45 @@ a.button {
   border: 1px solid var(--glass-line);
   border-radius: 999px;
 }
+
+/* Denunciar vídeo: o campo de texto segue o visual dos outros campos, com cantos menos arredondados. */
+.field textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 16px 22px;
+  font: inherit;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--field);
+  border: 1px solid var(--glass-line);
+  border-radius: 24px;
+  resize: vertical;
+  transition: background-color 200ms var(--calm), border-color 200ms var(--calm);
+}
+
+.field textarea:hover {
+  border-color: rgb(255 255 255 / 45%);
+}
+
+.field textarea:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+  background: var(--field-focus);
+  border-color: var(--text);
+}
+
+.field textarea[aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+.vreport {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: var(--step-small);
+  color: var(--soft);
+}
+
+.vpanel > .vcaption {
+  margin: 16px 0 4px;
+}

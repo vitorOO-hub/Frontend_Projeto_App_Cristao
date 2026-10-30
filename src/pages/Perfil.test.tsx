@@ -188,3 +188,17 @@ test('há um caminho de volta para o início', async () => {
   open()
   expect(screen.getByRole('link', { name: /Início/ }).getAttribute('href')).toBe('/')
 })
+
+test('em Curtidos, vídeo de outra pessoa tem o link Denunciar; o do próprio usuário não', async () => {
+  const typed = userEvent.setup()
+  const own = { ...video('v3', 'Meu próprio vídeo'), author: person('u1', 'Maria Souza') }
+  vi.mocked(reactedVideos).mockResolvedValue(page([video('v2', 'Salmo 23'), own]))
+  open()
+  await screen.findByText('Louvor da manhã')
+  await typed.click(tab('Curtidos'))
+  await screen.findByText('Salmo 23')
+
+  const links = screen.getAllByRole('link', { name: 'Denunciar' })
+  expect(links).toHaveLength(1)
+  expect(links[0].getAttribute('href')).toBe('/videos/v2/denunciar')
+})

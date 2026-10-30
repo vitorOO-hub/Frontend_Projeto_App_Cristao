@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import type { UserSelf } from './api/auth.ts'
 import { GuestOnly, RequireAuth } from './components/RouteGuards.tsx'
 import Cadastro from './pages/Cadastro.tsx'
+import Denunciar from './pages/Denunciar.tsx'
 import Home from './pages/Home.tsx'
 import Lives from './pages/Lives.tsx'
 import Login from './pages/Login.tsx'
@@ -47,6 +48,14 @@ export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
         element={
           <RequireAuth signedIn={signedIn}>
             <Perfil />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/videos/:id/denunciar"
+        element={
+          <RequireAuth signedIn={signedIn}>
+            <Denunciar />
           </RequireAuth>
         }
       />
