@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { myVideos, type VideoOwn, type VideoStatus } from '../api/videos.ts'
 import { CATEGORIES } from '../categories.ts'
-import { Spinner } from './Layout.tsx'
+import ListStatus from './ListStatus.tsx'
 import { errorMessage } from '../errorMessage.ts'
 import { duration } from '../format.ts'
 
@@ -102,30 +102,15 @@ export default function MeusVideosPanel() {
           </ul>
         )}
 
-        {loading && (
-          <p className="vstate" role="status">
-            <Spinner />
-            Carregando…
-          </p>
-        )}
-        {error && (
-          <div role="alert" className="alert vstate-error">
-            {error}
-            <button type="button" className="vfilter" onClick={() => void load(status, next ?? undefined)}>
-              Tentar de novo
-            </button>
-          </div>
-        )}
-        {!loading && !error && items.length === 0 && (
-          <p className="vstate">
-            {status ? 'Nenhum vídeo nesta situação.' : 'Você ainda não publicou nenhum vídeo.'}
-          </p>
-        )}
-        {!loading && !error && next && (
-          <button type="button" className="button vmore" onClick={() => void load(status, next)}>
-            Carregar mais
-          </button>
-        )}
+        <ListStatus
+          loading={loading}
+          error={error}
+          hasItems={items.length > 0}
+          empty={status ? 'Nenhum vídeo nesta situação.' : 'Você ainda não publicou nenhum vídeo.'}
+          hasMore={next !== null}
+          onRetry={() => void load(status, next ?? undefined)}
+          onLoadMore={() => void load(status, next ?? undefined)}
+        />
     </>
   )
 }

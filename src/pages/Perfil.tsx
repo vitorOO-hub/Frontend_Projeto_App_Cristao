@@ -4,6 +4,7 @@ import type { Page } from '../api/client.ts'
 import { myFollowers, myFollowing, myProfile, reactedVideos, type Profile, type UserPublic } from '../api/profile.ts'
 import { CATEGORIES } from '../categories.ts'
 import { Brand, Spinner } from '../components/Layout.tsx'
+import ListStatus from '../components/ListStatus.tsx'
 import MeusVideosPanel from '../components/MeusVideosPanel.tsx'
 import { errorMessage } from '../errorMessage.ts'
 import { duration } from '../format.ts'
@@ -173,28 +174,15 @@ export default function Perfil() {
 
 function ListState({ list, empty }: { list: ReturnType<typeof usePagedList>; empty: string }) {
   return (
-    <>
-      {list.loading && (
-        <p className="vstate" role="status">
-          <Spinner />
-          Carregando…
-        </p>
-      )}
-      {list.error && (
-        <div role="alert" className="alert vstate-error">
-          {list.error}
-          <button type="button" className="vfilter" onClick={() => void list.retry()}>
-            Tentar de novo
-          </button>
-        </div>
-      )}
-      {!list.loading && !list.error && list.items.length === 0 && <p className="vstate">{empty}</p>}
-      {!list.loading && !list.error && list.hasMore && (
-        <button type="button" className="button vmore" onClick={() => void list.loadMore()}>
-          Carregar mais
-        </button>
-      )}
-    </>
+    <ListStatus
+      loading={list.loading}
+      error={list.error}
+      hasItems={list.items.length > 0}
+      empty={empty}
+      hasMore={list.hasMore}
+      onRetry={() => void list.retry()}
+      onLoadMore={() => void list.loadMore()}
+    />
   )
 }
 
