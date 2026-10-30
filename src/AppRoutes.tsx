@@ -3,10 +3,13 @@ import type { UserSelf } from './api/auth.ts'
 import { GuestOnly, RequireAuth } from './components/RouteGuards.tsx'
 import Cadastro from './pages/Cadastro.tsx'
 import Denunciar from './pages/Denunciar.tsx'
+import Feed from './pages/Feed.tsx'
 import Home from './pages/Home.tsx'
 import Lives from './pages/Lives.tsx'
 import Login from './pages/Login.tsx'
+import Moderacao from './pages/Moderacao.tsx'
 import Perfil from './pages/Perfil.tsx'
+import Publicar from './pages/Publicar.tsx'
 
 type AppRoutesProps = {
   user: UserSelf | null
@@ -42,6 +45,21 @@ export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
         }
       />
       {/* Meus vídeos agora é uma aba do perfil; o endereço antigo continua funcionando. */}
+      <Route
+        path="/feed"
+        element={<RequireAuth signedIn={signedIn}>{user && <Feed selfId={user.id} />}</RequireAuth>}
+      />
+      <Route
+        path="/publicar"
+        element={<RequireAuth signedIn={signedIn}><Publicar /></RequireAuth>}
+      />
+      {/* Só administradores; o servidor confere o papel de novo em cada chamada. */}
+      <Route
+        path="/moderacao"
+        element={
+          <RequireAuth signedIn={signedIn}>{user?.role === 'admin' ? <Moderacao /> : <Navigate to="/" replace />}</RequireAuth>
+        }
+      />
       <Route path="/meus-videos" element={<Navigate to="/perfil" replace />} />
       <Route
         path="/perfil"

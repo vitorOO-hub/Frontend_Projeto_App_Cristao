@@ -5,7 +5,7 @@ import { ApiError } from '../api/client.ts'
 import Layout, { Spinner } from '../components/Layout.tsx'
 import { errorMessage } from '../errorMessage.ts'
 
-// Provisória até o feed (#17): mostra quem está logado e permite sair.
+// Início: mostra quem está logado, leva ao feed, ao perfil e às lives, e permite sair.
 export default function Home({ user, onLogout }: { user: UserSelf; onLogout: () => void }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -27,7 +27,7 @@ export default function Home({ user, onLogout }: { user: UserSelf; onLogout: () 
   return (
     <Layout
       title={`Olá, ${user.name.trim().split(/\s+/)[0]}`}
-      sentence="Os primeiros vídeos aprovados vão aparecer aqui. Enquanto isso, veja como vai ser o feed."
+      sentence="Veja os vídeos aprovados no feed, acompanhe seu perfil ou saia da conta."
     >
       <div className="profile">
         <span className="avatar" aria-hidden="true">
@@ -43,6 +43,17 @@ export default function Home({ user, onLogout }: { user: UserSelf; onLogout: () 
         <p role="alert" className="alert">
           {error}
         </p>
+      )}
+      <Link to="/feed" className="button">
+        Feed
+      </Link>
+      <Link to="/publicar" className="button">
+        Publicar vídeo
+      </Link>
+      {user.role === 'admin' && (
+        <Link to="/moderacao" className="button">
+          Moderação
+        </Link>
       )}
       <Link to="/perfil" className="button">
         Perfil

@@ -4,6 +4,8 @@ const BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? '/api'
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 // Acima do proxy (30 s) o navegador desistiria sozinho; aqui a tela não fica presa em "Entrando…".
 const REQUEST_TIMEOUT_MS = 15_000
+// Envio de arquivo (até 50 MiB) leva mais tempo que um JSON.
+const UPLOAD_TIMEOUT_MS = 120_000
 
 export class ApiError extends Error {
   readonly status: number
@@ -39,16 +41,18 @@ let csrfRequest: Promise<void> | null = null
 
 async function send(method: string, path: string, body?: unknown): Promise<Response> {
   const headers: Record<string, string> = { Accept: 'application/json' }
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  // FormData: o navegador define o Content-Type com o boundary; não pode ser fixado aqui.
+  const upload = body instanceof FormData
+  if (body !== undefined && !upload) headers['Content-Type'] = 'application/json'
   if (MUTATING.has(method) && csrfToken) headers['X-CSRF-Token'] = csrfToken
   const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+  const timer = setTimeout(() => controller.abort(), upload ? UPLOAD_TIMEOUT_MS : REQUEST_TIMEOUT_MS)
   try {
     return await fetch(BASE_URL + path, {
       method,
       headers,
       credentials: 'same-origin',
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : upload ? body : JSON.stringify(body),
       signal: controller.signal,
     })
   } catch {
