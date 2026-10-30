@@ -44,6 +44,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.resetAllMocks()
+  vi.unstubAllGlobals()
 })
 
 test('mostra os vídeos aprovados com player apontando para a mídia da API', async () => {
@@ -97,7 +98,7 @@ test('feed vazio e erro com nova tentativa', async () => {
 
 test('Amém atualiza na hora, confirma com o servidor e pode ser desfeito', async () => {
   vi.mocked(feedVideos).mockResolvedValue(page([video('a1')]))
-  vi.mocked(setAmen).mockResolvedValueOnce({ reacted: true, reaction_count: 3 }).mockResolvedValueOnce({ reacted: false, reaction_count: 2 })
+  vi.mocked(setAmen).mockResolvedValueOnce({ reacted: true, reaction_count: 3 }).mockResolvedValueOnce(undefined)
   open()
   const amen = await screen.findByRole('button', { name: 'Amém, 2' })
 
@@ -109,6 +110,30 @@ test('Amém atualiza na hora, confirma com o servidor e pode ser desfeito', asyn
   await userEvent.click(screen.getByRole('button', { name: 'Amém, 3' }))
   await screen.findByRole('button', { name: 'Amém, 2' })
   expect(setAmen).toHaveBeenLastCalledWith('a1', false)
+  expect(screen.getByRole('button', { name: 'Amém, 2' }).getAttribute('aria-pressed')).toBe('false')
+  expect(screen.queryByRole('alert')).toBeNull()
+})
+
+test('desfazer Amém pelo cliente HTTP aceita 204 sem corpo e mantém a reação removida', async () => {
+  const actual = await vi.importActual<typeof import('../api/feed.ts')>('../api/feed.ts')
+  vi.mocked(setAmen).mockImplementation(actual.setAmen)
+  vi.mocked(feedVideos).mockResolvedValue(page([video('a1', { reacted_by_me: true })]))
+  const fetchMock = vi.fn()
+    .mockResolvedValueOnce(new Response(JSON.stringify({ data: { csrf_token: 'token' } }), { status: 200 }))
+    .mockResolvedValueOnce(new Response(null, { status: 204 }))
+  vi.stubGlobal('fetch', fetchMock)
+  open()
+
+  await userEvent.click(await screen.findByRole('button', { name: 'Amém, 2' }))
+
+  await waitFor(() => expect((screen.getByRole('button', { name: 'Amém, 1' }) as HTMLButtonElement).disabled).toBe(false))
+  expect(screen.getByRole('button', { name: 'Amém, 1' }).getAttribute('aria-pressed')).toBe('false')
+  expect(screen.queryByRole('alert')).toBeNull()
+  expect(fetchMock).toHaveBeenCalledTimes(2)
+  expect(fetchMock).toHaveBeenLastCalledWith('/api/videos/a1/reaction', expect.objectContaining({
+    method: 'DELETE',
+    headers: expect.objectContaining({ 'X-CSRF-Token': 'token' }),
+  }))
 })
 
 test('falha no Amém volta ao valor anterior e mostra o erro', async () => {

@@ -38,8 +38,11 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId: stri
     setCount((n) => n + (next ? 1 : -1))
     try {
       const result = await setAmen(video.id, next)
-      setReacted(result.reacted)
-      setCount(result.reaction_count)
+      // DELETE retorna 204: mantém a remoção e a contagem já atualizadas acima.
+      if (result) {
+        setReacted(result.reacted)
+        setCount(result.reaction_count)
+      }
     } catch (e) {
       setReacted(!next)
       setCount((n) => n + (next ? -1 : 1))

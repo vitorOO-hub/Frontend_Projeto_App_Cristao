@@ -13,6 +13,6 @@ export const feedVideos = (category?: string, cursor?: string) => {
 
 export type Reaction = { reacted: boolean; reaction_count: number }
 
-/** Diz "Amém" (PUT) ou desfaz (DELETE); os dois são idempotentes e devolvem a contagem atual. */
+/** Diz "Amém" (PUT, devolve a contagem) ou desfaz (DELETE, 204 sem corpo); ambos são idempotentes. */
 export const setAmen = (videoId: string, on: boolean) =>
-  on ? api.put<Reaction>(`/videos/${videoId}/reaction`) : api.delete<Reaction>(`/videos/${videoId}/reaction`)
+  on ? api.put<Reaction>(`/videos/${videoId}/reaction`) : api.delete<void>(`/videos/${videoId}/reaction`)
