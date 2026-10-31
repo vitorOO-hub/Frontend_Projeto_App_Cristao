@@ -9,6 +9,8 @@ import MeusVideosPanel from '../components/MeusVideosPanel.tsx'
 import { errorMessage } from '../errorMessage.ts'
 import { duration } from '../format.ts'
 import { usePagedList } from '../usePagedList.ts'
+import { useVisibilityRevision } from '../visibility.ts'
+import BlocksPanel from '../components/BlocksPanel.tsx'
 
 /** O que o cartão de vídeo precisa; serve tanto para os vídeos do usuário quanto para os que ele curtiu. */
 type VideoItem = {
@@ -50,6 +52,7 @@ const tabs: Tab[] = [
     label: 'Seguindo',
     panel: () => <UserPanel fetch={myFollowing} empty="Você ainda não segue ninguém." />,
   },
+  { id: 'bloqueados', label: 'Bloqueados', panel: () => <BlocksPanel /> },
 ]
 
 const STATS: { label: string; stat: keyof Profile['counts'] }[] = [
@@ -62,6 +65,7 @@ const STATS: { label: string; stat: keyof Profile['counts'] }[] = [
 
 /** Perfil de quem está logado. Tudo vem de /me/*: o servidor decide quem é o usuário pela sessão. */
 export default function Perfil() {
+  const revision = useVisibilityRevision()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [error, setError] = useState('')
   const [selected, setSelected] = useState(0)
@@ -79,7 +83,7 @@ export default function Perfil() {
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect
     void load()
-  }, [load])
+  }, [load, revision])
 
   // Padrão de abas do WAI-ARIA: setas e Home/End trocam de aba e levam o foco junto.
   function onTabKey(event: KeyboardEvent) {
@@ -165,7 +169,7 @@ export default function Perfil() {
               ))}
             </div>
             <div role="tabpanel" id="painel-perfil" aria-labelledby={`aba-${tab.id}`} tabIndex={0}>
-              <div key={tab.id}>{tab.panel(profile.user.id)}</div>
+              <div key={`${tab.id}:${revision}`}>{tab.panel(profile.user.id)}</div>
             </div>
           </>
         )}

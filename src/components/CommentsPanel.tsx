@@ -4,9 +4,12 @@ import { comments, createComment, deleteComment } from '../api/comments.ts'
 import { errorMessage } from '../errorMessage.ts'
 import { usePagedList } from '../usePagedList.ts'
 import ListStatus from './ListStatus.tsx'
+import BlockButton from './BlockButton.tsx'
+import { useVisibilityRevision } from '../visibility.ts'
 
 export default function CommentsPanel({ videoId, selfId, onCountChange }: { videoId: string; selfId?: string; onCountChange: (delta: number) => void }) {
-  const fetchPage = useCallback((cursor?: string) => comments(videoId, cursor), [videoId])
+  const revision = useVisibilityRevision()
+  const fetchPage = useCallback((cursor?: string) => comments(videoId, cursor), [videoId, revision])
   const list = usePagedList(fetchPage)
   const [text, setText] = useState('')
   const [error, setError] = useState('')
@@ -42,6 +45,7 @@ export default function CommentsPanel({ videoId, selfId, onCountChange }: { vide
             list.setItems((items) => items.filter((item) => item.id !== comment.id))
             onCountChange(-1)
           })}>Remover comentário</button>}
+          {selfId && selfId !== comment.author.id && <BlockButton userId={comment.author.id} name={comment.author.name} />}
         </div>
       </li>)}
     </ul>

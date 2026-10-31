@@ -7,6 +7,7 @@ import { CATEGORIES } from '../categories.ts'
 import { errorMessage } from '../errorMessage.ts'
 import { duration } from '../format.ts'
 import CommentsPanel from './CommentsPanel.tsx'
+import BlockButton from './BlockButton.tsx'
 
 type Verse = { status: 'loading' } | { status: 'ok'; passage: Passage } | { status: 'error'; message: string }
 
@@ -133,6 +134,7 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId?: str
             </Link>
           )}
         </div>
+        {selfId && !own && <BlockButton userId={video.author.id} name={authorName} />}
         {commentsOpen && <CommentsPanel videoId={video.id} selfId={selfId} onCountChange={(delta) => setCommentCount((count) => Math.max(0, count + delta))} />}
         {amenError && (
           <p role="alert" className="alert">

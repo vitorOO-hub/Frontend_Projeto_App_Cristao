@@ -6,6 +6,7 @@ import FeedCard from '../components/FeedCard.tsx'
 import { Brand } from '../components/Layout.tsx'
 import ListStatus from '../components/ListStatus.tsx'
 import { usePagedList } from '../usePagedList.ts'
+import { useVisibilityRevision } from '../visibility.ts'
 
 /** Lista de uma categoria; trocar a categoria remonta o componente e recomeça da primeira página. */
 function FeedList({ category, selfId }: { category?: string; selfId?: string }) {
@@ -41,6 +42,7 @@ function FeedList({ category, selfId }: { category?: string; selfId?: string }) 
 
 /** Feed vertical dos vídeos aprovados, com filtro de categoria. */
 export default function Feed({ selfId }: { selfId?: string }) {
+  const revision = useVisibilityRevision()
   const [category, setCategory] = useState<string | undefined>()
 
   return (
@@ -63,7 +65,7 @@ export default function Feed({ selfId }: { selfId?: string }) {
             </button>
           ))}
         </div>
-        <FeedList key={`${selfId ?? 'visitante'}:${category ?? 'todas'}`} category={category} selfId={selfId} />
+        <FeedList key={`${selfId ?? 'visitante'}:${category ?? 'todas'}:${revision}`} category={category} selfId={selfId} />
       </main>
     </div>
   )
