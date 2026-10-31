@@ -1342,3 +1342,8 @@ a.button {
   font: inherit;
   color: var(--text);
 }
+
+.video-management form { display: grid; gap: .8rem; margin-top: 1rem; }
+.video-management label { display: grid; gap: .4rem; }
+.video-management input, .video-management textarea, .video-management select { width: 100%; max-width: 100%; padding: .6rem; color: var(--text, #fff); background: #17252c; border: 1px solid #6b7c85; border-radius: .5rem; font: inherit; }
+.video-management textarea { min-height: 5rem; resize: vertical; }
