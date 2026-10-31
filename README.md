@@ -8,7 +8,7 @@ React 19 + TypeScript + Vite 8, com versões exatas em `package.json` e `package
 ```bash
 npm ci
 npm run dev      # http://localhost:5173, com /api encaminhado ao Flask em 127.0.0.1:5000
-npm test         # testes do cliente HTTP (Vitest)
+npm test         # testes de telas e cliente HTTP (Vitest)
 npm run lint
 npm run build    # checagem de tipos + build em dist/
 ```
@@ -26,6 +26,16 @@ import { ApiError, api } from './api/client.ts'
 const { user } = await api.post<{ user: UserSelf }>('/auth/login', { email, password })
 const me = await api.get<UserSelf>('/me')
 ```
+
+## Fluxos disponíveis
+
+- `/feed` e `/usuarios/:id`: consulta pública de vídeos aprovados, categorias, reprodução manual e passagem bíblica. Para reagir, comentar ou denunciar, é necessário entrar.
+- `/perfil`: perfil próprio, edição de nome/bio, publicações em todos os estados, edição de metadados e exclusão com confirmação. Alterar vídeo aprovado o devolve à análise.
+- Comentários paginados permitem publicação e remoção apenas pelo autor autenticado. O cliente preserva texto em falha e não repete automaticamente uma publicação após timeout.
+- Bloquear um autor ou comentarista refaz as listas e remove conteúdo previamente carregado. A aba **Bloqueados** do perfil permite desbloquear; o filtro é pessoal, sem remoção global.
+- `/publicar` envia MP4 para revisão; `/moderacao` oferece fila e tratamento de denúncias para administradores. As permissões são verificadas pelo Flask.
+
+Os clientes usam os endpoints existentes do Flask, com cookie HttpOnly e CSRF; não há acesso direto ao Atlas pelo navegador. Testes de telas e HTTP usam respostas simuladas. Nesta entrega, integração navegador–Flask–Atlas, persistência real, serviço bíblico externo e implantação AWS ainda precisam de verificação em ambiente autorizado.
 
 ## Documentação
 
