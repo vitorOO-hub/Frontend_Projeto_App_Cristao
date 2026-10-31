@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { myVideos, type VideoOwn, type VideoStatus } from '../api/videos.ts'
 import { CATEGORIES } from '../categories.ts'
 import ListStatus from './ListStatus.tsx'
+import OwnVideoActions from './OwnVideoActions.tsx'
 import { errorMessage } from '../errorMessage.ts'
 import { duration } from '../format.ts'
 
@@ -96,6 +97,7 @@ export default function MeusVideosPanel() {
                       {video.review_reason ?? 'Sem motivo informado.'}
                     </p>
                   )}
+                  <OwnVideoActions video={video} onChanged={() => void load(status)} />
                 </div>
               </li>
             ))}

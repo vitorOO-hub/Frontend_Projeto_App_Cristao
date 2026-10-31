@@ -19,10 +19,21 @@ export function usePagedList<T>(fetchPage: (cursor?: string) => Promise<Page<T>>
       attempted.current = cursor
       setLoading(true)
       setError('')
+      if (!cursor) { setItems([]); setNext(null) }
       try {
         const result = await fetchPage(cursor)
         if (request !== latest.current) return
-        setItems((current) => (cursor ? [...current, ...result.data] : result.data))
+        setItems((current) => {
+          const combined = cursor ? [...current, ...result.data] : result.data
+          const seen = new Set<unknown>()
+          return combined.filter((item) => {
+            const id = (item as { id?: unknown } | null)?.id
+            if (id === undefined) return true
+            if (seen.has(id)) return false
+            seen.add(id)
+            return true
+          })
+        })
         setNext(result.pagination.next_cursor)
       } catch (e) {
         if (request === latest.current) setError(errorMessage(e))
@@ -36,10 +47,13 @@ export function usePagedList<T>(fetchPage: (cursor?: string) => Promise<Page<T>>
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect
     void load()
+    return () => { latest.current += 1 }
   }, [load])
 
   return {
     items,
+    setItems,
+    refresh: () => load(),
     loading,
     error,
     hasMore: next !== null,

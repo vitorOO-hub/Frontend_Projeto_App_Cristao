@@ -1,4 +1,7 @@
 import { api } from './client.ts'
+import type { Video } from './profile.ts'
+
+export const getVideo = (id: string) => api.get<Video>(`/videos/${encodeURIComponent(id)}`)
 
 // VideoOwn de docs/api.md do backend (Video + review_reason, visível só ao autor e ao admin).
 export type VideoStatus = 'pending' | 'approved' | 'rejected'
@@ -25,3 +28,7 @@ export const myVideos = (status?: VideoStatus, cursor?: string) => {
   const suffix = query.size ? `?${query}` : ''
   return api.getPage<VideoOwn>(`/me/videos${suffix}`)
 }
+
+export type VideoMetadata = Pick<VideoOwn, 'caption' | 'category' | 'bible_reference'>
+export const editVideo = (id: string, metadata: VideoMetadata) => api.patch<VideoOwn>(`/videos/${encodeURIComponent(id)}`, metadata)
+export const deleteVideo = (id: string) => api.delete<void>(`/videos/${encodeURIComponent(id)}`)

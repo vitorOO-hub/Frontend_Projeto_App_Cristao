@@ -7,6 +7,7 @@ import { afterEach, expect, test, vi } from 'vitest'
 import type { UserSelf } from './api/auth.ts'
 import AppRoutes from './AppRoutes.tsx'
 
+vi.mock('./pages/Feed.tsx', () => ({ default: () => <p>feed público</p> }))
 vi.mock('./pages/Home.tsx', () => ({ default: () => <p>tela inicial</p> }))
 vi.mock('./pages/Perfil.tsx', () => ({
   default: function Perfil() {
@@ -36,14 +37,14 @@ function open(path: string, user: UserSelf | null) {
   )
 }
 
-test.each(['/', '/perfil', '/lives'])('visitante em %s é levado para o login', (path) => {
+test.each(['/perfil', '/lives'])('visitante em %s é levado para o login', (path) => {
   open(path, null)
   expect(screen.getByText('tela de login')).toBeTruthy()
 })
 
-test('visitante em rota que não existe cai no login', () => {
+test('visitante em rota que não existe encontra o feed público', () => {
   open('/qualquer-coisa', null)
-  expect(screen.getByText('tela de login')).toBeTruthy()
+  expect(screen.getByText('feed público')).toBeTruthy()
 })
 
 test.each(['/login', '/cadastro'])('quem já entrou em %s vai para o início', (path) => {
@@ -92,4 +93,9 @@ test('quem entrou acessa as lives', () => {
 test('o endereço antigo de Meus vídeos leva ao perfil', () => {
   open('/meus-videos', maria)
   expect(screen.getByText('tela de perfil em /perfil')).toBeTruthy()
+})
+
+ test.each(['/', '/feed'])('visitante consulta %s sem login', (path) => {
+  open(path, null)
+  expect(screen.getByText('feed público')).toBeTruthy()
 })

@@ -9,7 +9,9 @@ import Lives from './pages/Lives.tsx'
 import Login from './pages/Login.tsx'
 import Moderacao from './pages/Moderacao.tsx'
 import Perfil from './pages/Perfil.tsx'
+import PerfilPublico from './pages/PerfilPublico.tsx'
 import Publicar from './pages/Publicar.tsx'
+import VideoDetalhe from './pages/VideoDetalhe.tsx'
 
 type AppRoutesProps = {
   user: UserSelf | null
@@ -41,13 +43,13 @@ export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
       <Route
         path="/"
         element={
-          <RequireAuth signedIn={signedIn}>{user && <Home user={user} onLogout={() => setUser(null)} />}</RequireAuth>
+          user ? <Home user={user} onLogout={() => setUser(null)} /> : <Navigate to="/feed" replace />
         }
       />
       {/* Meus vídeos agora é uma aba do perfil; o endereço antigo continua funcionando. */}
       <Route
         path="/feed"
-        element={<RequireAuth signedIn={signedIn}>{user && <Feed selfId={user.id} />}</RequireAuth>}
+        element={<Feed key={user?.id ?? 'visitante'} selfId={user?.id} />}
       />
       <Route
         path="/publicar"
@@ -60,12 +62,14 @@ export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
           <RequireAuth signedIn={signedIn}>{user?.role === 'admin' ? <Moderacao /> : <Navigate to="/" replace />}</RequireAuth>
         }
       />
+      <Route path="/usuarios/:id" element={<PerfilPublico selfId={user?.id} />} />
+      <Route path="/videos/:id" element={<VideoDetalhe selfId={user?.id} />} />
       <Route path="/meus-videos" element={<Navigate to="/perfil" replace />} />
       <Route
         path="/perfil"
         element={
           <RequireAuth signedIn={signedIn}>
-            <Perfil />
+            <Perfil key={user?.id} onUserChange={setUser} />
           </RequireAuth>
         }
       />

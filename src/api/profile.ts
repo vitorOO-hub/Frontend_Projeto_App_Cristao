@@ -49,3 +49,11 @@ export const myProfile = () => api.get<Profile>('/me/profile')
 export const reactedVideos = (cursor?: string) => api.getPage<Video>(page('/me/reacted-videos', cursor))
 export const myFollowers = (cursor?: string) => api.getPage<UserPublic>(page('/me/followers', cursor))
 export const myFollowing = (cursor?: string) => api.getPage<UserPublic>(page('/me/following', cursor))
+
+export const updateProfile = (profile: Pick<UserPublic, 'name' | 'bio'>) => api.patch<UserSelf>('/me', profile)
+export const publicUser = (id: string) => api.get<UserPublic>(`/users/${encodeURIComponent(id)}`)
+export const userVideos = (id: string, cursor?: string) => {
+  const query = new URLSearchParams({ author_id: id })
+  if (cursor) query.set('cursor', cursor)
+  return api.getPage<Video>(`/videos?${query}`)
+}

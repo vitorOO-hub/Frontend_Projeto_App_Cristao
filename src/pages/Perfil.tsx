@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
+import type { UserSelf } from '../api/auth.ts'
+import EditProfile from '../components/EditProfile.tsx'
 import type { Page } from '../api/client.ts'
 import { myFollowers, myFollowing, myProfile, reactedVideos, type Profile, type UserPublic } from '../api/profile.ts'
 import { CATEGORIES } from '../categories.ts'
@@ -9,6 +11,8 @@ import MeusVideosPanel from '../components/MeusVideosPanel.tsx'
 import { errorMessage } from '../errorMessage.ts'
 import { duration } from '../format.ts'
 import { usePagedList } from '../usePagedList.ts'
+import { useVisibilityRevision } from '../visibility.ts'
+import BlocksPanel from '../components/BlocksPanel.tsx'
 
 /** O que o cartão de vídeo precisa; serve tanto para os vídeos do usuário quanto para os que ele curtiu. */
 type VideoItem = {
@@ -50,6 +54,7 @@ const tabs: Tab[] = [
     label: 'Seguindo',
     panel: () => <UserPanel fetch={myFollowing} empty="Você ainda não segue ninguém." />,
   },
+  { id: 'bloqueados', label: 'Bloqueados', panel: () => <BlocksPanel /> },
 ]
 
 const STATS: { label: string; stat: keyof Profile['counts'] }[] = [
@@ -61,25 +66,31 @@ const STATS: { label: string; stat: keyof Profile['counts'] }[] = [
 ]
 
 /** Perfil de quem está logado. Tudo vem de /me/*: o servidor decide quem é o usuário pela sessão. */
-export default function Perfil() {
+export default function Perfil({ onUserChange }: { onUserChange?: (user: UserSelf) => void } = {}) {
+  const { state } = useLocation()
+  const revision = useVisibilityRevision()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [error, setError] = useState('')
-  const [selected, setSelected] = useState(0)
+  const [selected, setSelected] = useState(() => state?.tab === 'curtidos' ? 1 : 0)
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
 
+  const latest = useRef(0)
   const load = useCallback(async () => {
+    const request = ++latest.current
     setError('')
     try {
-      setProfile(await myProfile())
+      const result = await myProfile()
+      if (request === latest.current) setProfile(result)
     } catch (e) {
-      setError(errorMessage(e))
+      if (request === latest.current) setError(errorMessage(e))
     }
   }, [])
 
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect
     void load()
-  }, [load])
+    return () => { latest.current += 1 }
+  }, [load, revision])
 
   // Padrão de abas do WAI-ARIA: setas e Home/End trocam de aba e levam o foco junto.
   function onTabKey(event: KeyboardEvent) {
@@ -135,6 +146,8 @@ export default function Perfil() {
                 </p>
               </div>
             </section>
+            <EditProfile user={profile.user} onSaved={(user) => { latest.current += 1; setProfile((current) => current ? { ...current, user } : current); onUserChange?.(user) }} />
+            <Link to={`/usuarios/${profile.user.id}`}>Ver meu perfil público</Link>
             <ul className="pstats" aria-label="Números do perfil">
               {STATS.map(({ label, stat }) => (
                 <li key={stat}>
@@ -165,7 +178,7 @@ export default function Perfil() {
               ))}
             </div>
             <div role="tabpanel" id="painel-perfil" aria-labelledby={`aba-${tab.id}`} tabIndex={0}>
-              <div key={tab.id}>{tab.panel(profile.user.id)}</div>
+              <div key={`${tab.id}:${revision}`}>{tab.panel(profile.user.id)}</div>
             </div>
           </>
         )}
@@ -174,7 +187,7 @@ export default function Perfil() {
   )
 }
 
-function ListState({ list, empty }: { list: ReturnType<typeof usePagedList>; empty: string }) {
+function ListState({ list, empty }: { list: Pick<ReturnType<typeof usePagedList>, 'items' | 'loading' | 'error' | 'hasMore' | 'retry' | 'loadMore'>; empty: string }) {
   return (
     <ListStatus
       loading={list.loading}
@@ -207,13 +220,13 @@ function VideoPanel({
         <ul className="vlist">
           {list.items.map((video) => (
             <li key={video.id} className="vcard">
-              <div className="vthumb">
+              <Link className="vthumb" to={`/videos/${video.id}`} state={{ from: 'curtidos' }} aria-label={`Assistir ${video.caption}`}>
                 {/* #t=0.1 mostra o primeiro quadro como miniatura; só metadados são baixados. */}
                 <video src={`${video.media_url}#t=0.1`} preload="metadata" muted playsInline aria-hidden="true" />
                 <span className="vdur">{duration(video.duration_seconds)}</span>
-              </div>
+              </Link>
               <div className="vbody">
-                <p className="vcaption">{video.caption}</p>
+                <p className="vcaption"><Link to={`/videos/${video.id}`} state={{ from: 'curtidos' }}>{video.caption}</Link></p>
                 <p className="vmeta">
                   {showAuthor && video.author && `${video.author.name} · `}
                   {CATEGORIES[video.category] ?? video.category} · {new Date(video.created_at).toLocaleDateString('pt-BR')}
@@ -245,7 +258,7 @@ function UserPanel({ fetch, empty }: { fetch: (cursor?: string) => Promise<Page<
                 {person.name.trim().charAt(0).toUpperCase()}
               </span>
               <span>
-                <span className="profile-name">{person.name}</span>
+                <Link className="profile-name" to={`/usuarios/${person.id}`}>{person.name}</Link>
                 {person.username && <span className="profile-email">@{person.username}</span>}
               </span>
             </li>

@@ -6,6 +6,8 @@ import type { Video } from '../api/profile.ts'
 import { CATEGORIES } from '../categories.ts'
 import { errorMessage } from '../errorMessage.ts'
 import { duration } from '../format.ts'
+import CommentsPanel from './CommentsPanel.tsx'
+import BlockButton from './BlockButton.tsx'
 
 type Verse = { status: 'loading' } | { status: 'ok'; passage: Passage } | { status: 'error'; message: string }
 
@@ -17,7 +19,9 @@ function pauseOthers(current: HTMLVideoElement) {
 }
 
 /** Um vídeo do feed: player com controles, Amém, versículo e denúncia. */
-export default function FeedCard({ video, selfId }: { video: Video; selfId: string }) {
+export default function FeedCard({ video, selfId }: { video: Video; selfId?: string }) {
+  const [commentsOpen, setCommentsOpen] = useState(false)
+  const [commentCount, setCommentCount] = useState(video.comment_count)
   const [reacted, setReacted] = useState(video.reacted_by_me)
   const [count, setCount] = useState(video.reaction_count)
   const [sending, setSending] = useState(false)
@@ -29,7 +33,7 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId: stri
   const reference = video.bible_reference
 
   async function toggleAmen() {
-    if (sending) return
+    if (!selfId || sending) return
     setSending(true)
     setAmenError('')
     const next = !reacted
@@ -80,7 +84,7 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId: stri
           <span className="vtag">{CATEGORIES[video.category] ?? video.category}</span>
           <span className="vtag">{duration(video.duration_seconds)}</span>
         </div>
-        <p className="feed-author">{authorName}</p>
+        <p className="feed-author"><Link to={`/usuarios/${video.author.id}`}>{authorName}</Link></p>
         <p className="vcaption">{video.caption}</p>
 
         {reference && (
@@ -113,7 +117,7 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId: stri
         )}
 
         <div className="feed-actions">
-          <button
+          {selfId ? <button
             type="button"
             className="vfilter feed-amen"
             aria-pressed={reacted}
@@ -122,14 +126,16 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId: stri
             onClick={() => void toggleAmen()}
           >
             Amém · {count}
-          </button>
-          <span className="feed-comments">{video.comment_count} comentários</span>
-          {!own && (
+          </button> : <Link className="vfilter" to="/login" state={{ from: { pathname: '/feed', search: '', hash: '' } }}>Entre para dizer Amém · {count}</Link>}
+          <button type="button" className="vfilter" aria-expanded={commentsOpen} onClick={() => setCommentsOpen((open) => !open)}>{commentCount} comentários</button>
+          {selfId && !own && (
             <Link to={`/videos/${video.id}/denunciar`} state={{ caption: video.caption }} className="feed-report">
               Denunciar
             </Link>
           )}
         </div>
+        {selfId && !own && <BlockButton userId={video.author.id} name={authorName} />}
+        {commentsOpen && <CommentsPanel videoId={video.id} selfId={selfId} onCountChange={(delta) => setCommentCount((count) => Math.max(0, count + delta))} />}
         {amenError && (
           <p role="alert" className="alert">
             {amenError}

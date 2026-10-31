@@ -6,9 +6,10 @@ import FeedCard from '../components/FeedCard.tsx'
 import { Brand } from '../components/Layout.tsx'
 import ListStatus from '../components/ListStatus.tsx'
 import { usePagedList } from '../usePagedList.ts'
+import { useVisibilityRevision } from '../visibility.ts'
 
 /** Lista de uma categoria; trocar a categoria remonta o componente e recomeça da primeira página. */
-function FeedList({ category, selfId }: { category?: string; selfId: string }) {
+function FeedList({ category, selfId }: { category?: string; selfId?: string }) {
   const fetchPage = useCallback((cursor?: string) => feedVideos(category, cursor), [category])
   const { items, loading, error, hasMore, loadMore, retry } = usePagedList(fetchPage)
 
@@ -40,16 +41,25 @@ function FeedList({ category, selfId }: { category?: string; selfId: string }) {
 }
 
 /** Feed vertical dos vídeos aprovados, com filtro de categoria. */
-export default function Feed({ selfId }: { selfId: string }) {
+export default function Feed({ selfId }: { selfId?: string }) {
+  const revision = useVisibilityRevision()
   const [category, setCategory] = useState<string | undefined>()
 
   return (
     <div className="vpage">
       <header className="topbar vtopbar">
         <Brand />
-        <Link to="/" className="glass vback">
-          ← Início
-        </Link>
+        <nav className="feed-actions" aria-label="Navegação do feed">
+          <Link to="/" className="glass vback">
+            ← Início
+          </Link>
+          {!selfId && (
+            <>
+              <Link to="/login" state={{ from: { pathname: '/feed', search: '', hash: '' } }} className="glass vback">Entrar</Link>
+              <Link to="/cadastro" state={{ from: { pathname: '/feed', search: '', hash: '' } }} className="glass vback">Criar conta</Link>
+            </>
+          )}
+        </nav>
       </header>
       <main className="glass vpanel feed">
         <h1 className="vtitle">Feed</h1>
@@ -63,7 +73,7 @@ export default function Feed({ selfId }: { selfId: string }) {
             </button>
           ))}
         </div>
-        <FeedList key={category ?? 'todas'} category={category} selfId={selfId} />
+        <FeedList key={`${selfId ?? 'visitante'}:${category ?? 'todas'}:${revision}`} category={category} selfId={selfId} />
       </main>
     </div>
   )
