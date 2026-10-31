@@ -174,3 +174,13 @@ test('denunciar aparece só nos vídeos de outras pessoas', async () => {
   expect(links).toHaveLength(1)
   expect(links[0].getAttribute('href')).toBe('/videos/a1/denunciar')
 })
+
+ test('visitante assiste e consulta passagem sem chamar mutação', async () => {
+  vi.mocked(feedVideos).mockResolvedValue(page([video('a1')]))
+  render(<MemoryRouter><Feed /></MemoryRouter>)
+  const link = await screen.findByRole('link', { name: /Entre para dizer Amém/ })
+  expect(link.getAttribute('href')).toBe('/login')
+  expect(screen.queryByRole('button', { name: /Amém,/ })).toBeNull()
+  expect(setAmen).not.toHaveBeenCalled()
+  expect(screen.queryByRole('link', { name: 'Denunciar' })).toBeNull()
+})

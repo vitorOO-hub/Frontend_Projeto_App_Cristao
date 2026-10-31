@@ -8,7 +8,7 @@ import ListStatus from '../components/ListStatus.tsx'
 import { usePagedList } from '../usePagedList.ts'
 
 /** Lista de uma categoria; trocar a categoria remonta o componente e recomeça da primeira página. */
-function FeedList({ category, selfId }: { category?: string; selfId: string }) {
+function FeedList({ category, selfId }: { category?: string; selfId?: string }) {
   const fetchPage = useCallback((cursor?: string) => feedVideos(category, cursor), [category])
   const { items, loading, error, hasMore, loadMore, retry } = usePagedList(fetchPage)
 
@@ -40,7 +40,7 @@ function FeedList({ category, selfId }: { category?: string; selfId: string }) {
 }
 
 /** Feed vertical dos vídeos aprovados, com filtro de categoria. */
-export default function Feed({ selfId }: { selfId: string }) {
+export default function Feed({ selfId }: { selfId?: string }) {
   const [category, setCategory] = useState<string | undefined>()
 
   return (
@@ -63,7 +63,7 @@ export default function Feed({ selfId }: { selfId: string }) {
             </button>
           ))}
         </div>
-        <FeedList key={category ?? 'todas'} category={category} selfId={selfId} />
+        <FeedList key={`${selfId ?? 'visitante'}:${category ?? 'todas'}`} category={category} selfId={selfId} />
       </main>
     </div>
   )

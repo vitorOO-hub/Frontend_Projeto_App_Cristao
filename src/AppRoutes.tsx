@@ -41,13 +41,13 @@ export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
       <Route
         path="/"
         element={
-          <RequireAuth signedIn={signedIn}>{user && <Home user={user} onLogout={() => setUser(null)} />}</RequireAuth>
+          user ? <Home user={user} onLogout={() => setUser(null)} /> : <Navigate to="/feed" replace />
         }
       />
       {/* Meus vídeos agora é uma aba do perfil; o endereço antigo continua funcionando. */}
       <Route
         path="/feed"
-        element={<RequireAuth signedIn={signedIn}>{user && <Feed selfId={user.id} />}</RequireAuth>}
+        element={<Feed key={user?.id ?? 'visitante'} selfId={user?.id} />}
       />
       <Route
         path="/publicar"

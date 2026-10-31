@@ -17,7 +17,7 @@ function pauseOthers(current: HTMLVideoElement) {
 }
 
 /** Um vídeo do feed: player com controles, Amém, versículo e denúncia. */
-export default function FeedCard({ video, selfId }: { video: Video; selfId: string }) {
+export default function FeedCard({ video, selfId }: { video: Video; selfId?: string }) {
   const [reacted, setReacted] = useState(video.reacted_by_me)
   const [count, setCount] = useState(video.reaction_count)
   const [sending, setSending] = useState(false)
@@ -29,7 +29,7 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId: stri
   const reference = video.bible_reference
 
   async function toggleAmen() {
-    if (sending) return
+    if (!selfId || sending) return
     setSending(true)
     setAmenError('')
     const next = !reacted
@@ -113,7 +113,7 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId: stri
         )}
 
         <div className="feed-actions">
-          <button
+          {selfId ? <button
             type="button"
             className="vfilter feed-amen"
             aria-pressed={reacted}
@@ -122,9 +122,9 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId: stri
             onClick={() => void toggleAmen()}
           >
             Amém · {count}
-          </button>
+          </button> : <Link className="vfilter" to="/login" state={{ from: { pathname: '/feed', search: '', hash: '' } }}>Entre para dizer Amém · {count}</Link>}
           <span className="feed-comments">{video.comment_count} comentários</span>
-          {!own && (
+          {selfId && !own && (
             <Link to={`/videos/${video.id}/denunciar`} state={{ caption: video.caption }} className="feed-report">
               Denunciar
             </Link>
