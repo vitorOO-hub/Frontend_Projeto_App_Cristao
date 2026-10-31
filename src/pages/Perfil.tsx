@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { Link } from 'react-router'
+import type { UserSelf } from '../api/auth.ts'
+import EditProfile from '../components/EditProfile.tsx'
 import type { Page } from '../api/client.ts'
 import { myFollowers, myFollowing, myProfile, reactedVideos, type Profile, type UserPublic } from '../api/profile.ts'
 import { CATEGORIES } from '../categories.ts'
@@ -64,7 +66,7 @@ const STATS: { label: string; stat: keyof Profile['counts'] }[] = [
 ]
 
 /** Perfil de quem está logado. Tudo vem de /me/*: o servidor decide quem é o usuário pela sessão. */
-export default function Perfil() {
+export default function Perfil({ onUserChange }: { onUserChange?: (user: UserSelf) => void } = {}) {
   const revision = useVisibilityRevision()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [error, setError] = useState('')
@@ -139,6 +141,8 @@ export default function Perfil() {
                 </p>
               </div>
             </section>
+            <EditProfile user={profile.user} onSaved={(user) => { setProfile((current) => current ? { ...current, user } : current); onUserChange?.(user) }} />
+            <Link to={`/usuarios/${profile.user.id}`}>Ver meu perfil público</Link>
             <ul className="pstats" aria-label="Números do perfil">
               {STATS.map(({ label, stat }) => (
                 <li key={stat}>
@@ -249,7 +253,7 @@ function UserPanel({ fetch, empty }: { fetch: (cursor?: string) => Promise<Page<
                 {person.name.trim().charAt(0).toUpperCase()}
               </span>
               <span>
-                <span className="profile-name">{person.name}</span>
+                <Link className="profile-name" to={`/usuarios/${person.id}`}>{person.name}</Link>
                 {person.username && <span className="profile-email">@{person.username}</span>}
               </span>
             </li>

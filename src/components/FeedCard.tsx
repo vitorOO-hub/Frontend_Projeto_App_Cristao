@@ -84,7 +84,7 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId?: str
           <span className="vtag">{CATEGORIES[video.category] ?? video.category}</span>
           <span className="vtag">{duration(video.duration_seconds)}</span>
         </div>
-        <p className="feed-author">{authorName}</p>
+        <p className="feed-author"><Link to={`/usuarios/${video.author.id}`}>{authorName}</Link></p>
         <p className="vcaption">{video.caption}</p>
 
         {reference && (

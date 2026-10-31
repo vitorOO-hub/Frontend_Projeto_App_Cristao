@@ -39,7 +39,7 @@ export default function CommentsPanel({ videoId, selfId, onCountChange }: { vide
     <h2>Comentários</h2>
     <ul className="ulist">
       {list.items.map((comment) => <li key={comment.id} className="uitem">
-        <div><strong>{comment.author.name}</strong><p>{comment.text}</p>
+        <div><Link to={`/usuarios/${comment.author.id}`}><strong>{comment.author.name}</strong></Link><p>{comment.text}</p>
           {selfId === comment.author.id && <button className="vfilter" type="button" disabled={busy || list.loading} onClick={() => void mutate(async () => {
             await deleteComment(comment.id)
             list.setItems((items) => items.filter((item) => item.id !== comment.id))

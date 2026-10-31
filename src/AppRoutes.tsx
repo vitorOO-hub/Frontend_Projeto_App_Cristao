@@ -9,6 +9,7 @@ import Lives from './pages/Lives.tsx'
 import Login from './pages/Login.tsx'
 import Moderacao from './pages/Moderacao.tsx'
 import Perfil from './pages/Perfil.tsx'
+import PerfilPublico from './pages/PerfilPublico.tsx'
 import Publicar from './pages/Publicar.tsx'
 
 type AppRoutesProps = {
@@ -60,12 +61,13 @@ export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
           <RequireAuth signedIn={signedIn}>{user?.role === 'admin' ? <Moderacao /> : <Navigate to="/" replace />}</RequireAuth>
         }
       />
+      <Route path="/usuarios/:id" element={<PerfilPublico selfId={user?.id} />} />
       <Route path="/meus-videos" element={<Navigate to="/perfil" replace />} />
       <Route
         path="/perfil"
         element={
           <RequireAuth signedIn={signedIn}>
-            <Perfil />
+            <Perfil key={user?.id} onUserChange={setUser} />
           </RequireAuth>
         }
       />
