@@ -1,8 +1,18 @@
-import { useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { UserSelf } from '../api/auth.ts'
 import { updateProfile } from '../api/profile.ts'
 import { errorMessage } from '../errorMessage.ts'
-export default function EditProfile({ user, onSaved }: { user: UserSelf; onSaved: (user: UserSelf) => void }) {
+type Props = { user: UserSelf; onSaved: (user: UserSelf) => void }
+export default function EditProfile(props: Props) {
+  // Trocar a conta descarta formulário, trava e pedidos da identidade anterior.
+  return <ProfileEditor key={props.user.id} {...props} />
+}
+function ProfileEditor({ user, onSaved }: Props) {
+  const lifecycle = useRef(0)
+  useEffect(() => {
+    lifecycle.current += 1
+    return () => { lifecycle.current += 1 }
+  }, [])
   const [open, setOpen] = useState(false)
   const [name, setName] = useState(user.name)
   const [bio, setBio] = useState(user.bio)
@@ -12,12 +22,17 @@ export default function EditProfile({ user, onSaved }: { user: UserSelf; onSaved
   async function save(event: FormEvent) {
     event.preventDefault()
     if (lock.current || name.trim().length < 2) return
+    const generation = lifecycle.current
     lock.current = true; setBusy(true); setError('')
     try {
       const saved = await updateProfile({ name: name.trim(), bio: bio.trim() })
+      if (generation !== lifecycle.current || saved.id !== user.id) return
       onSaved(saved); setOpen(false)
-    } catch (e) { setError(errorMessage(e)) }
-    finally { lock.current = false; setBusy(false) }
+    } catch (e) {
+      if (generation === lifecycle.current) setError(errorMessage(e))
+    } finally {
+      if (generation === lifecycle.current) { lock.current = false; setBusy(false) }
+    }
   }
   return <div className="video-management">
     {!open ? <button className="vfilter" type="button" onClick={() => { setName(user.name); setBio(user.bio); setError(''); setOpen(true) }}>Editar perfil</button> : <form aria-label="Editar perfil" onSubmit={(event) => void save(event)}>

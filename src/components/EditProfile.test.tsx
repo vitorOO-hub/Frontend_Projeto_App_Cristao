@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, expect, test, vi } from 'vitest'
 import { updateProfile } from '../api/profile.ts'
@@ -28,4 +28,37 @@ test('erro preserva formulário e não muda identidade', async () => {
   await screen.findByRole('alert')
   expect(screen.getByRole('form', { name: 'Editar perfil' })).toBeTruthy()
   expect(saved).not.toHaveBeenCalled()
+})
+
+
+test('resposta de edição concluída após desmontagem não restaura identidade', async () => {
+  let resolve!: (value: UserSelf) => void
+  vi.mocked(updateProfile).mockReturnValueOnce(new Promise((done) => { resolve = done }))
+  const saved = vi.fn()
+  const view = render(<EditProfile user={user} onSaved={saved} />)
+  await userEvent.click(screen.getByRole('button', { name: 'Editar perfil' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Salvar perfil' }))
+  expect(updateProfile).toHaveBeenCalledOnce()
+  view.unmount()
+  await act(async () => { resolve({ ...user, name: 'Ana atrasada' }) })
+  expect(saved).not.toHaveBeenCalled()
+})
+
+test('troca de conta e retorno à mesma conta não revalidam pedido da montagem anterior', async () => {
+  let resolve!: (value: UserSelf) => void
+  vi.mocked(updateProfile).mockReturnValueOnce(new Promise((done) => { resolve = done }))
+  const saved = vi.fn()
+  const other = { ...user, id: 'outra', name: 'Bia' }
+  const view = render(<EditProfile user={user} onSaved={saved} />)
+  await userEvent.click(screen.getByRole('button', { name: 'Editar perfil' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Salvar perfil' }))
+  view.rerender(<EditProfile user={other} onSaved={saved} />)
+  await userEvent.click(screen.getByRole('button', { name: 'Editar perfil' }))
+  expect((screen.getByLabelText('Nome') as HTMLInputElement).value).toBe('Bia')
+  expect((screen.getByRole('button', { name: 'Salvar perfil' }) as HTMLButtonElement).disabled).toBe(false)
+  view.rerender(<EditProfile user={user} onSaved={saved} />)
+  await act(async () => { resolve({ ...user, name: 'Ana atrasada' }) })
+  expect(saved).not.toHaveBeenCalled()
+  await userEvent.click(screen.getByRole('button', { name: 'Editar perfil' }))
+  expect((screen.getByLabelText('Nome') as HTMLInputElement).value).toBe('Ana')
 })
