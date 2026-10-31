@@ -7,9 +7,13 @@ import ListStatus from './ListStatus.tsx'
 import BlockButton from './BlockButton.tsx'
 import { useVisibilityRevision } from '../visibility.ts'
 
-export default function CommentsPanel({ videoId, selfId, onCountChange }: { videoId: string; selfId?: string; onCountChange: (delta: number) => void }) {
+type Props = { videoId: string; selfId?: string; onCountChange: (delta: number) => void }
+export default function CommentsPanel(props: Props) {
   const revision = useVisibilityRevision()
-  const fetchPage = useCallback((cursor?: string) => comments(videoId, cursor), [videoId, revision])
+  return <CommentsContent key={`${props.videoId}:${props.selfId ?? 'visitante'}:${revision}`} {...props} />
+}
+function CommentsContent({ videoId, selfId, onCountChange }: Props) {
+  const fetchPage = useCallback((cursor?: string) => comments(videoId, cursor), [videoId])
   const list = usePagedList(fetchPage)
   const [text, setText] = useState('')
   const [error, setError] = useState('')

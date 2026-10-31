@@ -73,18 +73,22 @@ export default function Perfil({ onUserChange }: { onUserChange?: (user: UserSel
   const [selected, setSelected] = useState(0)
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
 
+  const latest = useRef(0)
   const load = useCallback(async () => {
+    const request = ++latest.current
     setError('')
     try {
-      setProfile(await myProfile())
+      const result = await myProfile()
+      if (request === latest.current) setProfile(result)
     } catch (e) {
-      setError(errorMessage(e))
+      if (request === latest.current) setError(errorMessage(e))
     }
   }, [])
 
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect
     void load()
+    return () => { latest.current += 1 }
   }, [load, revision])
 
   // Padrão de abas do WAI-ARIA: setas e Home/End trocam de aba e levam o foco junto.
@@ -141,7 +145,7 @@ export default function Perfil({ onUserChange }: { onUserChange?: (user: UserSel
                 </p>
               </div>
             </section>
-            <EditProfile user={profile.user} onSaved={(user) => { setProfile((current) => current ? { ...current, user } : current); onUserChange?.(user) }} />
+            <EditProfile user={profile.user} onSaved={(user) => { latest.current += 1; setProfile((current) => current ? { ...current, user } : current); onUserChange?.(user) }} />
             <Link to={`/usuarios/${profile.user.id}`}>Ver meu perfil público</Link>
             <ul className="pstats" aria-label="Números do perfil">
               {STATS.map(({ label, stat }) => (

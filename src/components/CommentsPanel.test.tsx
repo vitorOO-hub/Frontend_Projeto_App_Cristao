@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import { comments, createComment, deleteComment, type Comment } from '../api/comments.ts'
 import CommentsPanel from './CommentsPanel.tsx'
+import { invalidateVisibility } from '../visibility.ts'
 vi.mock('../api/comments.ts', () => ({ comments: vi.fn(), createComment: vi.fn(), deleteComment: vi.fn() }))
 const item = (id: string, authorId = 'eu'): Comment => ({ id, video_id: 'v', author: { id: authorId, name: 'Ana', username: null, bio: '', created_at: '' }, text: `Comentário ${id}`, created_at: '' })
 const page = (data: Comment[], next: string | null = null) => ({ data, pagination: { next_cursor: next, has_more: !!next } })
@@ -65,4 +66,14 @@ test('comentário recém-criado fica após páginas antigas carregadas depois, s
   await userEvent.click(screen.getByRole('button', { name: 'Carregar mais' }))
   await screen.findByText('Comentário 2')
   expect(screen.getAllByText(/Comentário [123]/).map((node) => node.textContent)).toEqual(['Comentário 1', 'Comentário 2', 'Comentário 3'])
+})
+
+test('resposta antiga não restaura comentários ocultados após invalidar visibilidade', async () => {
+  let resolve!: (value: ReturnType<typeof page>) => void
+  vi.mocked(comments).mockReturnValueOnce(new Promise((done) => { resolve = done })).mockResolvedValue(page([]))
+  open('eu')
+  act(() => invalidateVisibility())
+  await screen.findByText('Nenhum comentário ainda.')
+  await act(async () => { resolve(page([item('antigo')])) })
+  expect(screen.queryByText('Comentário antigo')).toBeNull()
 })
