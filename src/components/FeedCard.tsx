@@ -6,6 +6,7 @@ import type { Video } from '../api/profile.ts'
 import { CATEGORIES } from '../categories.ts'
 import { errorMessage } from '../errorMessage.ts'
 import { duration } from '../format.ts'
+import CommentsPanel from './CommentsPanel.tsx'
 
 type Verse = { status: 'loading' } | { status: 'ok'; passage: Passage } | { status: 'error'; message: string }
 
@@ -18,6 +19,8 @@ function pauseOthers(current: HTMLVideoElement) {
 
 /** Um vídeo do feed: player com controles, Amém, versículo e denúncia. */
 export default function FeedCard({ video, selfId }: { video: Video; selfId?: string }) {
+  const [commentsOpen, setCommentsOpen] = useState(false)
+  const [commentCount, setCommentCount] = useState(video.comment_count)
   const [reacted, setReacted] = useState(video.reacted_by_me)
   const [count, setCount] = useState(video.reaction_count)
   const [sending, setSending] = useState(false)
@@ -123,13 +126,14 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId?: str
           >
             Amém · {count}
           </button> : <Link className="vfilter" to="/login" state={{ from: { pathname: '/feed', search: '', hash: '' } }}>Entre para dizer Amém · {count}</Link>}
-          <span className="feed-comments">{video.comment_count} comentários</span>
+          <button type="button" className="vfilter" aria-expanded={commentsOpen} onClick={() => setCommentsOpen((open) => !open)}>{commentCount} comentários</button>
           {selfId && !own && (
             <Link to={`/videos/${video.id}/denunciar`} state={{ caption: video.caption }} className="feed-report">
               Denunciar
             </Link>
           )}
         </div>
+        {commentsOpen && <CommentsPanel videoId={video.id} selfId={selfId} onCountChange={(delta) => setCommentCount((count) => Math.max(0, count + delta))} />}
         {amenError && (
           <p role="alert" className="alert">
             {amenError}

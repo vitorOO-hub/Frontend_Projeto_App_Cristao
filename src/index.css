@@ -1347,3 +1347,7 @@ a.button {
 .video-management label { display: grid; gap: .4rem; }
 .video-management input, .video-management textarea, .video-management select { width: 100%; max-width: 100%; padding: .6rem; color: var(--text, #fff); background: #17252c; border: 1px solid #6b7c85; border-radius: .5rem; font: inherit; }
 .video-management textarea { min-height: 5rem; resize: vertical; }
+.comments-panel { margin-top: 1rem; }
+.comments-panel form, .comments-panel label { display: grid; gap: .6rem; }
+.comments-panel textarea { width: 100%; min-height: 5rem; padding: .6rem; font: inherit; border-radius: .5rem; }
+.comments-panel .uitem { overflow-wrap: anywhere; }

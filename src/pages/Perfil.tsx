@@ -174,7 +174,7 @@ export default function Perfil() {
   )
 }
 
-function ListState({ list, empty }: { list: ReturnType<typeof usePagedList>; empty: string }) {
+function ListState({ list, empty }: { list: Pick<ReturnType<typeof usePagedList>, 'items' | 'loading' | 'error' | 'hasMore' | 'retry' | 'loadMore'>; empty: string }) {
   return (
     <ListStatus
       loading={list.loading}
