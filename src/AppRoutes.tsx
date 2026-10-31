@@ -11,6 +11,7 @@ import Moderacao from './pages/Moderacao.tsx'
 import Perfil from './pages/Perfil.tsx'
 import PerfilPublico from './pages/PerfilPublico.tsx'
 import Publicar from './pages/Publicar.tsx'
+import VideoDetalhe from './pages/VideoDetalhe.tsx'
 
 type AppRoutesProps = {
   user: UserSelf | null
@@ -62,6 +63,7 @@ export default function AppRoutes({ user, setUser, notice }: AppRoutesProps) {
         }
       />
       <Route path="/usuarios/:id" element={<PerfilPublico selfId={user?.id} />} />
+      <Route path="/videos/:id" element={<VideoDetalhe selfId={user?.id} />} />
       <Route path="/meus-videos" element={<Navigate to="/perfil" replace />} />
       <Route
         path="/perfil"

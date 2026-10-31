@@ -764,6 +764,7 @@ a.button {
 
 .vtopbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -842,6 +843,7 @@ a.button {
 }
 
 .vthumb {
+  display: block;
   position: relative;
   aspect-ratio: 16 / 10;
   background: rgb(255 255 255 / 6%);

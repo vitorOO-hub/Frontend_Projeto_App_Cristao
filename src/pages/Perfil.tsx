@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import type { UserSelf } from '../api/auth.ts'
 import EditProfile from '../components/EditProfile.tsx'
 import type { Page } from '../api/client.ts'
@@ -67,10 +67,11 @@ const STATS: { label: string; stat: keyof Profile['counts'] }[] = [
 
 /** Perfil de quem está logado. Tudo vem de /me/*: o servidor decide quem é o usuário pela sessão. */
 export default function Perfil({ onUserChange }: { onUserChange?: (user: UserSelf) => void } = {}) {
+  const { state } = useLocation()
   const revision = useVisibilityRevision()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [error, setError] = useState('')
-  const [selected, setSelected] = useState(0)
+  const [selected, setSelected] = useState(() => state?.tab === 'curtidos' ? 1 : 0)
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
 
   const latest = useRef(0)
@@ -219,13 +220,13 @@ function VideoPanel({
         <ul className="vlist">
           {list.items.map((video) => (
             <li key={video.id} className="vcard">
-              <div className="vthumb">
+              <Link className="vthumb" to={`/videos/${video.id}`} state={{ from: 'curtidos' }} aria-label={`Assistir ${video.caption}`}>
                 {/* #t=0.1 mostra o primeiro quadro como miniatura; só metadados são baixados. */}
                 <video src={`${video.media_url}#t=0.1`} preload="metadata" muted playsInline aria-hidden="true" />
                 <span className="vdur">{duration(video.duration_seconds)}</span>
-              </div>
+              </Link>
               <div className="vbody">
-                <p className="vcaption">{video.caption}</p>
+                <p className="vcaption"><Link to={`/videos/${video.id}`} state={{ from: 'curtidos' }}>{video.caption}</Link></p>
                 <p className="vmeta">
                   {showAuthor && video.author && `${video.author.name} · `}
                   {CATEGORIES[video.category] ?? video.category} · {new Date(video.created_at).toLocaleDateString('pt-BR')}

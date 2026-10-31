@@ -96,6 +96,14 @@ test('feed vazio e erro com nova tentativa', async () => {
   expect(await screen.findByText('Ainda não há vídeos aprovados.')).toBeTruthy()
 })
 
+test('visitante pode entrar ou criar conta pelo cabeçalho mesmo com o feed vazio', async () => {
+  render(<MemoryRouter><Feed /></MemoryRouter>)
+  await screen.findByText('Ainda não há vídeos aprovados.')
+  expect(screen.getByRole('link', { name: 'Entrar' }).getAttribute('href')).toBe('/login')
+  expect(screen.getByRole('link', { name: 'Criar conta' }).getAttribute('href')).toBe('/cadastro')
+  expect(screen.getByRole('link', { name: /Início/ }).getAttribute('href')).toBe('/')
+})
+
 test('Amém atualiza na hora, confirma com o servidor e pode ser desfeito', async () => {
   vi.mocked(feedVideos).mockResolvedValue(page([video('a1')]))
   vi.mocked(setAmen).mockResolvedValueOnce({ reacted: true, reaction_count: 3 }).mockResolvedValueOnce(undefined)

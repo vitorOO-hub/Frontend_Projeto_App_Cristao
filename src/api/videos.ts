@@ -1,4 +1,7 @@
 import { api } from './client.ts'
+import type { Video } from './profile.ts'
+
+export const getVideo = (id: string) => api.get<Video>(`/videos/${encodeURIComponent(id)}`)
 
 // VideoOwn de docs/api.md do backend (Video + review_reason, visível só ao autor e ao admin).
 export type VideoStatus = 'pending' | 'approved' | 'rejected'

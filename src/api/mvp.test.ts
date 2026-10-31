@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import { forgetCsrf } from './client.ts'
-import { editVideo, deleteVideo } from './videos.ts'
+import { editVideo, deleteVideo, getVideo } from './videos.ts'
 import { comments, createComment, deleteComment } from './comments.ts'
 import { myBlocks, blockUser, unblockUser } from './blocks.ts'
 import { publicUser, userVideos, updateProfile } from './profile.ts'
@@ -24,6 +24,7 @@ test.each([
   expect(fetchMock).toHaveBeenLastCalledWith(path, expect.objectContaining({ method, credentials: 'same-origin', headers: expect.objectContaining({ 'X-CSRF-Token': 'csrf-test' }), body: body === undefined ? undefined : JSON.stringify(body) }))
 })
 test.each([
+  ['/api/videos/v1', () => getVideo('v1')],
   ['/api/users/u1', () => publicUser('u1')],
   ['/api/videos?author_id=u1&cursor=cursor%2F2', () => userVideos('u1', 'cursor/2')],
   ['/api/videos/v1/comments?cursor=cursor%2F2', () => comments('v1', 'cursor/2')],

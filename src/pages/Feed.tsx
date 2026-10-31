@@ -49,9 +49,17 @@ export default function Feed({ selfId }: { selfId?: string }) {
     <div className="vpage">
       <header className="topbar vtopbar">
         <Brand />
-        <Link to="/" className="glass vback">
-          ← Início
-        </Link>
+        <nav className="feed-actions" aria-label="Navegação do feed">
+          <Link to="/" className="glass vback">
+            ← Início
+          </Link>
+          {!selfId && (
+            <>
+              <Link to="/login" state={{ from: { pathname: '/feed', search: '', hash: '' } }} className="glass vback">Entrar</Link>
+              <Link to="/cadastro" state={{ from: { pathname: '/feed', search: '', hash: '' } }} className="glass vback">Criar conta</Link>
+            </>
+          )}
+        </nav>
       </header>
       <main className="glass vpanel feed">
         <h1 className="vtitle">Feed</h1>
