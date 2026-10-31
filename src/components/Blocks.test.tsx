@@ -45,3 +45,12 @@ test('falha de bloqueio não retira conteúdo visível', async () => {
   await waitFor(() => expect(screen.getByText('Vídeo 1')).toBeTruthy())
   expect(feedVideos).toHaveBeenCalledTimes(1)
 })
+
+test('troca de identidade descarta reações e conteúdo da sessão anterior', async () => {
+  vi.mocked(feedVideos).mockResolvedValueOnce(page([{ ...video('1'), reacted_by_me: true }])).mockResolvedValue(page([{ ...video('1'), reacted_by_me: false }]))
+  const view = render(<MemoryRouter><Feed selfId="primeiro" /></MemoryRouter>)
+  expect((await screen.findByRole('button', { name: 'Amém, 0' })).getAttribute('aria-pressed')).toBe('true')
+  view.rerender(<MemoryRouter><Feed selfId="segundo" /></MemoryRouter>)
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Amém, 0' }).getAttribute('aria-pressed')).toBe('false'))
+  expect(feedVideos).toHaveBeenCalledTimes(2)
+})

@@ -35,10 +35,11 @@ export default function CommentsPanel({ videoId, selfId, onCountChange }: { vide
     })
   }
 
+  const ordered = [...list.items].sort((a, b) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id))
   return <section aria-label="Comentários" className="comments-panel">
     <h2>Comentários</h2>
     <ul className="ulist">
-      {list.items.map((comment) => <li key={comment.id} className="uitem">
+      {ordered.map((comment) => <li key={comment.id} className="uitem">
         <div><Link to={`/usuarios/${comment.author.id}`}><strong>{comment.author.name}</strong></Link><p>{comment.text}</p>
           {selfId === comment.author.id && <button className="vfilter" type="button" disabled={busy || list.loading} onClick={() => void mutate(async () => {
             await deleteComment(comment.id)

@@ -53,3 +53,16 @@ test('falha ao enviar preserva texto para decisão do usuário, sem repetir o PO
   expect(createComment).toHaveBeenCalledOnce()
   expect(count).not.toHaveBeenCalled()
 })
+
+test('comentário recém-criado fica após páginas antigas carregadas depois, sem duplicar', async () => {
+  vi.mocked(comments).mockResolvedValueOnce(page([item('1')], 'next')).mockResolvedValueOnce(page([item('2'), item('3')]))
+  vi.mocked(createComment).mockResolvedValue(item('3'))
+  open('eu')
+  await screen.findByText('Comentário 1')
+  await userEvent.type(screen.getByLabelText('Seu comentário'), 'Novo')
+  await userEvent.click(screen.getByRole('button', { name: 'Publicar comentário' }))
+  await screen.findByText('Comentário 3')
+  await userEvent.click(screen.getByRole('button', { name: 'Carregar mais' }))
+  await screen.findByText('Comentário 2')
+  expect(screen.getAllByText(/Comentário [123]/).map((node) => node.textContent)).toEqual(['Comentário 1', 'Comentário 2', 'Comentário 3'])
+})
