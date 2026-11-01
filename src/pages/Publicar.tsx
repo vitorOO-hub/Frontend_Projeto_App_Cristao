@@ -2,9 +2,12 @@ import { useId, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { CAPTION_MAX, MAX_FILE_BYTES, publishVideo, REFERENCE_MAX } from '../api/publish.ts'
 import { CATEGORIES } from '../categories.ts'
+import { CardSelect } from '../components/CardSelect.tsx'
 import { Field } from '../components/Field.tsx'
 import { Brand, Spinner } from '../components/Layout.tsx'
 import { errorMessage } from '../errorMessage.ts'
+
+const CATEGORY_OPTIONS = Object.entries(CATEGORIES).map(([value, label]) => ({ value, label }))
 
 function fileProblem(file: File | null): string {
   if (!file) return 'Escolha um arquivo de vídeo.'
@@ -131,25 +134,16 @@ export default function Publicar() {
                 </p>
               </div>
 
-              <div className="field">
-                <label htmlFor={categoryId}>Categoria</label>
-                <div className="field-control">
-                  <select
-                    id={categoryId}
-                    name="category"
-                    value={category}
-                    aria-invalid={shown('category') ? true : undefined}
-                    aria-describedby={`${categoryId}-note`}
-                    onChange={(event) => setCategory(event.target.value)}
-                  >
-                    <option value="">Escolha…</option>
-                    {Object.entries(CATEGORIES).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <CardSelect
+                  label="Categoria"
+                  options={CATEGORY_OPTIONS}
+                  placeholder="Escolha…"
+                  value={category}
+                  onChange={setCategory}
+                  invalid={shown('category')}
+                  describedBy={`${categoryId}-note`}
+                />
                 {shown('category') && (
                   <p id={`${categoryId}-note`} className="field-error">
                     {shown('category')}

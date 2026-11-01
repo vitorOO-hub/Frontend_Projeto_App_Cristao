@@ -1229,7 +1229,7 @@ a.button {
 }
 
 /* Denunciar vídeo: lista de motivos em cartão de vidro, mesmo vocabulário dos campos e do .glass. */
-.reason-trigger {
+.pick-trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1248,26 +1248,26 @@ a.button {
   transition: background-color 200ms var(--calm), border-color 200ms var(--calm);
 }
 
-.reason-trigger:hover {
+.pick-trigger:hover {
   border-color: rgb(255 255 255 / 45%);
 }
 
-.reason-trigger:focus-visible {
+.pick-trigger:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 2px;
   background: var(--field-focus);
   border-color: var(--text);
 }
 
-.reason-trigger[aria-invalid='true'] {
+.pick-trigger[aria-invalid='true'] {
   border-color: var(--error);
 }
 
-.reason-placeholder {
+.pick-placeholder {
   color: var(--soft);
 }
 
-.reason-chevron {
+.pick-chevron {
   flex: none;
   width: 9px;
   height: 9px;
@@ -1278,12 +1278,12 @@ a.button {
   transition: transform 200ms var(--calm), margin 200ms var(--calm);
 }
 
-.reason-trigger[aria-expanded='true'] .reason-chevron {
+.pick-trigger[aria-expanded='true'] .pick-chevron {
   margin-top: 4px;
   transform: rotate(225deg);
 }
 
-.reason-card {
+.pick-card {
   display: grid;
   gap: 2px;
   margin: 0;
@@ -1295,10 +1295,10 @@ a.button {
   box-shadow: inset 0 1px 0 var(--glass-hi);
   -webkit-backdrop-filter: blur(24px);
   backdrop-filter: blur(24px);
-  animation: reason-in 200ms var(--enter);
+  animation: pick-in 200ms var(--enter);
 }
 
-.reason-option {
+.pick-option {
   padding: 12px 16px;
   font-size: var(--step-small);
   line-height: 1.35;
@@ -1306,15 +1306,15 @@ a.button {
   cursor: pointer;
 }
 
-.reason-option[data-active] {
+.pick-option[data-active] {
   background: var(--field-focus);
 }
 
-.reason-option[aria-selected='true'] {
+.pick-option[aria-selected='true'] {
   font-weight: 600;
 }
 
-@keyframes reason-in {
+@keyframes pick-in {
   from {
     opacity: 0;
     transform: translateY(-6px);
@@ -1322,7 +1322,7 @@ a.button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reason-card {
+  .pick-card {
     animation: none;
   }
 }

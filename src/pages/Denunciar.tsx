@@ -3,12 +3,26 @@ import { Link, useLocation, useParams } from 'react-router'
 import { ApiError } from '../api/client.ts'
 import { REASON_MAX, REASON_MIN, reportVideo } from '../api/reports.ts'
 import { Brand, Spinner } from '../components/Layout.tsx'
-import { ReasonSelect } from '../components/ReasonSelect.tsx'
+import { CardSelect } from '../components/CardSelect.tsx'
 import { errorMessage } from '../errorMessage.ts'
 
 const VIDEO_ID = /^[0-9a-f]{24}$/
 /** A descrição é opcional e curta; o servidor recebe "Motivo: descrição" num único campo `reason`. */
 const DETAIL_MAX = 500
+
+/** Motivos oferecidos na plataforma. Cada rótulo tem 10+ caracteres: sozinho já vale como `reason` no servidor. */
+const REASONS = [
+  'Conteúdo ofensivo ou blasfemo',
+  'Discurso de ódio ou discriminação',
+  'Assédio ou intimidação',
+  'Distorção da fé ou manipulação religiosa',
+  'Nudez ou conteúdo sexual',
+  'Violência ou conteúdo perturbador',
+  'Golpe ou pedido de dinheiro enganoso',
+  'Spam ou propaganda',
+  'Violação de privacidade',
+  'Outro motivo',
+].map((label) => ({ value: label, label }))
 
 /** Mensagem de quem denuncia: o servidor responde 409 se já denunciou e 404 se o vídeo saiu do ar. */
 function failure(e: unknown): string {
@@ -91,7 +105,7 @@ export default function Denunciar() {
               }}
             >
               <div id={`${fieldId}-reason`}>
-                <ReasonSelect label="Motivo da denúncia" value={category} onChange={setCategory} invalid={shown} describedBy={`${fieldId}-note`} />
+                <CardSelect label="Motivo da denúncia" options={REASONS} placeholder="Escolha um motivo" value={category} onChange={setCategory} invalid={shown} describedBy={`${fieldId}-note`} />
                 {shown && (
                   <p id={`${fieldId}-note`} className="field-error">
                     {shown}

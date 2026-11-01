@@ -1,35 +1,26 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 
-/** Motivos de denúncia oferecidos na plataforma. Cada rótulo tem 10+ caracteres: sozinho já vale como `reason` no servidor. */
-const REPORT_REASONS = [
-  'Conteúdo ofensivo ou blasfemo',
-  'Discurso de ódio ou discriminação',
-  'Assédio ou intimidação',
-  'Distorção da fé ou manipulação religiosa',
-  'Nudez ou conteúdo sexual',
-  'Violência ou conteúdo perturbador',
-  'Golpe ou pedido de dinheiro enganoso',
-  'Spam ou propaganda',
-  'Violação de privacidade',
-  'Outro motivo',
-] as const
+export type CardOption = { value: string; label: string }
 
 type Props = {
   label: string
+  options: readonly CardOption[]
   value: string
+  placeholder: string
   onChange: (value: string) => void
   invalid?: string
   describedBy?: string
 }
 
-/** Lista de motivos em cartão de vidro: abre por baixo do campo, sem sair do painel, e funciona só com teclado. */
-export function ReasonSelect({ label, value, onChange, invalid, describedBy }: Props) {
+/** Lista de escolha em cartão de vidro: abre por baixo do campo, sem sair do painel, e funciona só com teclado. */
+export function CardSelect({ label, options, value, placeholder, onChange, invalid, describedBy }: Props) {
   const id = useId()
   const root = useRef<HTMLDivElement>(null)
   const trigger = useRef<HTMLButtonElement>(null)
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(0)
+  const selected = options.find((option) => option.value === value)
 
   useEffect(() => {
     if (!open) return
@@ -41,12 +32,12 @@ export function ReasonSelect({ label, value, onChange, invalid, describedBy }: P
   }, [open])
 
   function toggle() {
-    if (!open) setActive(Math.max(0, REPORT_REASONS.indexOf(value as (typeof REPORT_REASONS)[number])))
+    if (!open) setActive(Math.max(0, options.findIndex((option) => option.value === value)))
     setOpen(!open)
   }
 
-  function choose(reason: string) {
-    onChange(reason)
+  function choose(next: string) {
+    onChange(next)
     setOpen(false)
     trigger.current?.focus()
   }
@@ -59,10 +50,10 @@ export function ReasonSelect({ label, value, onChange, invalid, describedBy }: P
       event.preventDefault()
       if (!open) return toggle()
       const step = event.key === 'ArrowDown' ? 1 : -1
-      setActive((active + step + REPORT_REASONS.length) % REPORT_REASONS.length)
+      setActive((active + step + options.length) % options.length)
     } else if (open && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault()
-      choose(REPORT_REASONS[active])
+      choose(options[active].value)
     }
   }
 
@@ -75,7 +66,7 @@ export function ReasonSelect({ label, value, onChange, invalid, describedBy }: P
         ref={trigger}
         id={`${id}-trigger`}
         type="button"
-        className="reason-trigger"
+        className="pick-trigger"
         role="combobox"
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -87,23 +78,23 @@ export function ReasonSelect({ label, value, onChange, invalid, describedBy }: P
         onClick={toggle}
         onKeyDown={onKeyDown}
       >
-        <span className={value ? undefined : 'reason-placeholder'}>{value || 'Escolha um motivo'}</span>
-        <span className="reason-chevron" aria-hidden="true" />
+        <span className={selected ? undefined : 'pick-placeholder'}>{selected?.label ?? placeholder}</span>
+        <span className="pick-chevron" aria-hidden="true" />
       </button>
       {open && (
-        <ul id={`${id}-list`} role="listbox" aria-labelledby={`${id}-label`} className="reason-card">
-          {REPORT_REASONS.map((reason, index) => (
+        <ul id={`${id}-list`} role="listbox" aria-labelledby={`${id}-label`} className="pick-card">
+          {options.map((option, index) => (
             <li
-              key={reason}
+              key={option.value}
               id={`${id}-opt-${index}`}
               role="option"
-              aria-selected={reason === value}
+              aria-selected={option.value === value}
               data-active={index === active || undefined}
-              className="reason-option"
+              className="pick-option"
               onPointerEnter={() => setActive(index)}
-              onClick={() => choose(reason)}
+              onClick={() => choose(option.value)}
             >
-              {reason}
+              {option.label}
             </li>
           ))}
         </ul>

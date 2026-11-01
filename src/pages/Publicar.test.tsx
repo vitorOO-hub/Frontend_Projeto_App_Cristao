@@ -22,7 +22,8 @@ function open() {
 async function fill(file: File = mp4(), applyAccept = true) {
   await userEvent.setup({ applyAccept }).upload(screen.getByLabelText('Arquivo de vídeo'), file)
   await userEvent.type(screen.getByLabelText('Legenda'), 'Louvor da manhã')
-  await userEvent.selectOptions(screen.getByLabelText('Categoria'), 'louvor')
+  await userEvent.click(screen.getByRole('combobox', { name: /Categoria/ }))
+  await userEvent.click(screen.getByRole('option', { name: 'Louvor' }))
 }
 
 afterEach(() => {
