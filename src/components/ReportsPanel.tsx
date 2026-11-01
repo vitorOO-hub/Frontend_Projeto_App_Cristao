@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { decideVideo, getVideo, reportQueue, resolveReport, type Report, type ReportStatus, type ReviewVideo } from '../api/moderation.ts'
+import { NOTE_MAX, NOTE_MIN, decideVideo, getVideo, reportQueue, resolveReport, type Report, type ReportStatus, type ReviewVideo } from '../api/moderation.ts'
 import { errorMessage } from '../errorMessage.ts'
 import { usePagedList } from '../usePagedList.ts'
 import { Spinner } from './Layout.tsx'
@@ -12,7 +12,7 @@ const FILTERS: { label: string; status: ReportStatus }[] = [
 
 type Target = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ok'; video: ReviewVideo }
 
-/** Textos fixos: o motivo da rejeição vai para o autor, então não repete o que o denunciante escreveu. */
+/** Sem mensagem do moderador, valem estes textos. O que o moderador escreve vai para o autor, quando o vídeo é retirado. */
 const REMOVED_REASON = 'Vídeo retirado do feed pela moderação após denúncia.'
 const NOTES = {
   remove: 'Vídeo excluído do feed pela moderação.',
@@ -26,6 +26,7 @@ function ReportCard({ report }: { report: Report }) {
   const [target, setTarget] = useState<Target>({ status: 'loading' })
   const [resolved, setResolved] = useState(report.status === 'resolved')
   const [note, setNote] = useState(report.resolution_note)
+  const [message, setMessage] = useState('')
   const [running, setRunning] = useState('')
   const [error, setError] = useState('')
 
@@ -50,14 +51,19 @@ function ReportCard({ report }: { report: Report }) {
 
   /** Excluir tira o vídeo do feed (rejeição) e encerra a denúncia; manter só encerra. Repetir após falha é seguro. */
   async function act(kind: 'remove' | 'keep' | 'gone') {
+    const text = message.trim()
+    if (text && text.length < NOTE_MIN) {
+      setError(`Escreva pelo menos ${NOTE_MIN} caracteres ou deixe a mensagem em branco.`)
+      return
+    }
     setRunning(kind)
     setError('')
     try {
       if (kind === 'remove' && target.status === 'ok' && target.video.status !== 'rejected') {
-        const video = await decideVideo(report.video_id, 'rejected', REMOVED_REASON, target.video.updated_at)
+        const video = await decideVideo(report.video_id, 'rejected', text || REMOVED_REASON, target.video.updated_at)
         setTarget({ status: 'ok', video })
       }
-      const updated = await resolveReport(report.id, NOTES[kind])
+      const updated = await resolveReport(report.id, text || NOTES[kind])
       setResolved(true)
       setNote(updated.resolution_note)
     } catch (e) {
@@ -98,6 +104,21 @@ function ReportCard({ report }: { report: Report }) {
           <p role="alert" className="alert">
             {error}
           </p>
+        )}
+        {!resolved && target.status !== 'loading' && (
+          <div className="field">
+            <label htmlFor={`${report.id}-message`}>Mensagem do moderador (opcional)</label>
+            <div className="field-control">
+              <textarea
+                id={`${report.id}-message`}
+                rows={3}
+                maxLength={NOTE_MAX}
+                value={message}
+                placeholder="Explique a decisão. Se o vídeo for excluído, o autor lê esta mensagem."
+                onChange={(event) => setMessage(event.target.value)}
+              />
+            </div>
+          </div>
         )}
         {!resolved && (
           <div className="feed-actions">

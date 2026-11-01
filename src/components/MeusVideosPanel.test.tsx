@@ -37,7 +37,7 @@ test('mostra o status de cada vídeo e o motivo só no rejeitado', async () => {
   const cards = await screen.findAllByRole('listitem')
   expect(within(cards[0]).getByText('Em análise')).toBeTruthy()
   expect(within(cards[1]).getByText('Aprovado')).toBeTruthy()
-  expect(within(cards[2]).getByText('Rejeitado')).toBeTruthy()
+  expect(within(cards[2]).getByText('Retirado do feed')).toBeTruthy()
   expect(within(cards[2]).getByRole('note').textContent).toContain('Áudio com música sem autorização.')
   expect(screen.getAllByRole('note')).toHaveLength(1)
   expect(within(cards[0]).getByText('1:05')).toBeTruthy()
@@ -46,7 +46,7 @@ test('mostra o status de cada vídeo e o motivo só no rejeitado', async () => {
 test('rejeitado sem motivo avisa em vez de ficar em branco', async () => {
   vi.mocked(myVideos).mockResolvedValue(page([video('c', 'rejected')]))
   open()
-  expect((await screen.findByRole('note')).textContent).toContain('Sem motivo informado.')
+  expect((await screen.findByRole('note')).textContent).toContain('Sem mensagem informada.')
 })
 
 test('lista vazia', async () => {
@@ -86,7 +86,7 @@ test('trocar de aba busca com o status certo e sem cursor', async () => {
   open()
   await screen.findByText('Legenda a')
 
-  await typed.click(screen.getByRole('button', { name: 'Rejeitados' }))
+  await typed.click(screen.getByRole('button', { name: 'Retirados' }))
   expect(await screen.findByText('Legenda c')).toBeTruthy()
   expect(myVideos).toHaveBeenLastCalledWith('rejected', undefined)
   expect(screen.queryByText('Legenda a')).toBeNull()
@@ -101,4 +101,13 @@ test('cada vídeo mostra a sua categoria', async () => {
   const cards = await screen.findAllByRole('listitem')
   expect(within(cards[0]).getByText('Estudo bíblico')).toBeTruthy()
   expect(within(cards[1]).getByText('Humor')).toBeTruthy()
+})
+
+test('vídeo retirado pela moderação mostra a mensagem do moderador', async () => {
+  vi.mocked(myVideos).mockResolvedValue(page([video('r', 'rejected', 'Contém ofensas a outros irmãos.')]))
+  open()
+
+  const note = await screen.findByRole('note')
+  expect(note.textContent).toContain('Retirado pela moderação')
+  expect(note.textContent).toContain('Contém ofensas a outros irmãos.')
 })

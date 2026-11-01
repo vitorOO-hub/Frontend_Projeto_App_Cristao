@@ -91,7 +91,7 @@ test('abre na aba Meus vídeos, com os vídeos do usuário em qualquer situaçã
   expect(await screen.findByText('Louvor da manhã')).toBeTruthy()
   expect(myVideos).toHaveBeenCalledWith(undefined, undefined)
   expect(tab('Meus vídeos').getAttribute('aria-selected')).toBe('true')
-  expect(screen.getByRole('button', { name: 'Rejeitados' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Retirados' })).toBeTruthy()
   expect(reactedVideos).not.toHaveBeenCalled()
 })
 

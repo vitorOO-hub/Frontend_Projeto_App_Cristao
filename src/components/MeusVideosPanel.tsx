@@ -9,14 +9,14 @@ import { duration } from '../format.ts'
 const STATUS: Record<VideoStatus, { label: string; icon: string }> = {
   pending: { label: 'Em análise', icon: '●' },
   approved: { label: 'Aprovado', icon: '✓' },
-  rejected: { label: 'Rejeitado', icon: '✕' },
+  rejected: { label: 'Retirado do feed', icon: '✕' },
 }
 
 const FILTERS: { label: string; status?: VideoStatus }[] = [
   { label: 'Todos' },
   { label: 'Em análise', status: 'pending' },
   { label: 'Aprovados', status: 'approved' },
-  { label: 'Rejeitados', status: 'rejected' },
+  { label: 'Retirados', status: 'rejected' },
 ]
 
 /** Os vídeos do próprio usuário em qualquer situação (em análise, aprovado, rejeitado), para a aba do perfil. */
@@ -57,7 +57,7 @@ export default function MeusVideosPanel() {
 
   return (
     <>
-      <p className="lead">Acompanhe a revisão dos vídeos que você publicou. Só os aprovados aparecem no feed.</p>
+      <p className="lead">Acompanhe a revisão dos vídeos que você publicou. Só os aprovados aparecem no feed; os retirados pela moderação ficam na aba Retirados, com a mensagem do moderador.</p>
         <div className="vfilters" role="group" aria-label="Filtrar por situação">
           {FILTERS.map((filter) => (
             <button
@@ -93,8 +93,8 @@ export default function MeusVideosPanel() {
                   <p className="vmeta">{new Date(video.created_at).toLocaleDateString('pt-BR')}</p>
                   {video.status === 'rejected' && (
                     <p className="vreason" role="note">
-                      <strong>Motivo da rejeição</strong>
-                      {video.review_reason ?? 'Sem motivo informado.'}
+                      <strong>Retirado pela moderação. Mensagem do moderador:</strong>
+                      {video.review_reason ?? 'Sem mensagem informada.'}
                     </p>
                   )}
                   <OwnVideoActions video={video} onChanged={() => void load(status)} />
@@ -108,7 +108,7 @@ export default function MeusVideosPanel() {
           loading={loading}
           error={error}
           hasItems={items.length > 0}
-          empty={status ? 'Nenhum vídeo nesta situação.' : 'Você ainda não publicou nenhum vídeo.'}
+          empty={status === 'rejected' ? 'Nenhum dos seus vídeos foi retirado pela moderação.' : status ? 'Nenhum vídeo nesta situação.' : 'Você ainda não publicou nenhum vídeo.'}
           hasMore={next !== null}
           onRetry={() => void load(status, next ?? undefined)}
           onLoadMore={() => void load(status, next ?? undefined)}

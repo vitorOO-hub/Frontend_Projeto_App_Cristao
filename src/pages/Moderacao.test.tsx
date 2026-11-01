@@ -168,3 +168,33 @@ test('denúncias: vídeo indisponível permite só encerrar a denúncia', async 
   expect(await screen.findByText('Resolução: Vídeo não está mais disponível.')).toBeTruthy()
   expect(screen.queryByRole('button', { name: 'Excluir vídeo' })).toBeNull()
 })
+
+test('denúncias: a mensagem do moderador vai como motivo da retirada e como nota da resolução', async () => {
+  vi.mocked(reviewQueue).mockResolvedValue(page([]))
+  vi.mocked(reportQueue).mockResolvedValue(page([report('r1')]))
+  vi.mocked(getVideo).mockResolvedValue(video('v1', { status: 'approved' }))
+  vi.mocked(decideVideo).mockResolvedValue(video('v1', { status: 'rejected' }))
+  vi.mocked(resolveReport).mockResolvedValue(report('r1', { status: 'resolved', resolution_note: 'Contém ofensas a outros irmãos.' }))
+  open()
+  await userEvent.click(screen.getByRole('button', { name: 'Denúncias' }))
+  await userEvent.type(await screen.findByLabelText('Mensagem do moderador (opcional)'), '  Contém ofensas a outros irmãos.  ')
+  await userEvent.click(screen.getByRole('button', { name: 'Excluir vídeo' }))
+
+  expect(await screen.findByText('Resolução: Contém ofensas a outros irmãos.')).toBeTruthy()
+  expect(decideVideo).toHaveBeenCalledWith('v1', 'rejected', 'Contém ofensas a outros irmãos.', '2026-10-28T12:00:00.123Z')
+  expect(resolveReport).toHaveBeenCalledWith('r1', 'Contém ofensas a outros irmãos.')
+})
+
+test('denúncias: mensagem curta demais não chama a API', async () => {
+  vi.mocked(reviewQueue).mockResolvedValue(page([]))
+  vi.mocked(reportQueue).mockResolvedValue(page([report('r1')]))
+  vi.mocked(getVideo).mockResolvedValue(video('v1', { status: 'approved' }))
+  open()
+  await userEvent.click(screen.getByRole('button', { name: 'Denúncias' }))
+  await userEvent.type(await screen.findByLabelText('Mensagem do moderador (opcional)'), 'curto')
+  await userEvent.click(screen.getByRole('button', { name: 'Deixar no feed' }))
+
+  expect((await screen.findByRole('alert')).textContent).toContain('pelo menos 10 caracteres')
+  expect(resolveReport).not.toHaveBeenCalled()
+  expect(decideVideo).not.toHaveBeenCalled()
+})
