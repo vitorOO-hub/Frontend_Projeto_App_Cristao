@@ -1,17 +1,20 @@
-import { useId, useRef, useState } from 'react'
+import { useId, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
 import { ApiError } from '../api/client.ts'
 import { REASON_MAX, REASON_MIN, reportVideo } from '../api/reports.ts'
 import { Brand, Spinner } from '../components/Layout.tsx'
+import { ReasonSelect } from '../components/ReasonSelect.tsx'
 import { errorMessage } from '../errorMessage.ts'
 
 const VIDEO_ID = /^[0-9a-f]{24}$/
+/** A descrição é opcional e curta; o servidor recebe "Motivo: descrição" num único campo `reason`. */
+const DETAIL_MAX = 500
 
 /** Mensagem de quem denuncia: o servidor responde 409 se já denunciou e 404 se o vídeo saiu do ar. */
 function failure(e: unknown): string {
   if (e instanceof ApiError && e.code === 'already_reported') return 'Você já denunciou este vídeo. Nossa equipe vai analisar.'
   if (e instanceof ApiError && e.status === 404) return 'Este vídeo não está mais disponível para denúncia.'
-  return errorMessage(e, `Descreva o motivo com ${REASON_MIN} a ${REASON_MAX} caracteres.`)
+  return errorMessage(e, `O motivo deve ter de ${REASON_MIN} a ${REASON_MAX} caracteres.`)
 }
 
 /** Denúncia de um vídeo aprovado de outra pessoa. A legenda só chega por navegação interna, para dar contexto. */
@@ -20,28 +23,29 @@ export default function Denunciar() {
   const { state } = useLocation()
   const caption = typeof (state as { caption?: unknown } | null)?.caption === 'string' ? (state as { caption: string }).caption : ''
   const fieldId = useId()
-  const area = useRef<HTMLTextAreaElement>(null)
-  const [reason, setReason] = useState('')
+  const [category, setCategory] = useState('')
+  const [detail, setDetail] = useState('')
   const [touched, setTouched] = useState(false)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const [sent, setSent] = useState(false)
 
-  const size = reason.trim().length
-  const invalid = size < REASON_MIN ? `Descreva o motivo com pelo menos ${REASON_MIN} caracteres.` : ''
+  const size = detail.trim().length
+  const invalid = category ? '' : 'Escolha um motivo para a denúncia.'
   const shown = touched ? invalid : ''
+  const reason = size ? `${category}: ${detail.trim()}` : category
 
   async function submit() {
     setTouched(true)
     if (invalid) {
-      area.current?.focus()
+      document.getElementById(`${fieldId}-reason`)?.querySelector('button')?.focus()
       return
     }
     if (sending) return
     setSending(true)
     setError('')
     try {
-      await reportVideo(id, reason.trim())
+      await reportVideo(id, reason)
       setSent(true)
     } catch (e) {
       setError(failure(e))
@@ -86,25 +90,29 @@ export default function Denunciar() {
                 void submit()
               }}
             >
+              <div id={`${fieldId}-reason`}>
+                <ReasonSelect label="Motivo da denúncia" value={category} onChange={setCategory} invalid={shown} describedBy={`${fieldId}-note`} />
+                {shown && (
+                  <p id={`${fieldId}-note`} className="field-error">
+                    {shown}
+                  </p>
+                )}
+              </div>
               <div className="field">
-                <label htmlFor={fieldId}>Motivo da denúncia</label>
+                <label htmlFor={fieldId}>Quer contar mais? (opcional)</label>
                 <div className="field-control">
                   <textarea
-                    ref={area}
                     id={fieldId}
-                    name="reason"
-                    required
-                    rows={6}
-                    maxLength={REASON_MAX}
-                    value={reason}
-                    aria-invalid={shown ? true : undefined}
-                    aria-describedby={`${fieldId}-note`}
-                    onBlur={() => setTouched(true)}
-                    onChange={(event) => setReason(event.target.value)}
+                    name="detail"
+                    rows={4}
+                    maxLength={DETAIL_MAX}
+                    value={detail}
+                    placeholder="Escreva uma breve descrição do que aconteceu."
+                    onChange={(event) => setDetail(event.target.value)}
                   />
                 </div>
-                <p id={`${fieldId}-note`} className={shown ? 'field-error' : 'field-hint'}>
-                  {shown || `Entre ${REASON_MIN} e ${REASON_MAX} caracteres.`} ({size}/{REASON_MAX})
+                <p className="field-hint">
+                  {size}/{DETAIL_MAX}
                 </p>
               </div>
               {error && (
