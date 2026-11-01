@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import FeedPreview from './FeedPreview.tsx'
+import FeedPreview from '../feed/FeedPreview.tsx'
 
 type LayoutProps = {
   title: string

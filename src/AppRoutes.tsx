@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router'
 import type { UserSelf } from './api/auth.ts'
-import { GuestOnly, RequireAuth } from './components/RouteGuards.tsx'
+import { GuestOnly, RequireAuth } from './components/ui/RouteGuards.tsx'
 import Cadastro from './pages/Cadastro.tsx'
 import Denunciar from './pages/Denunciar.tsx'
 import Feed from './pages/Feed.tsx'

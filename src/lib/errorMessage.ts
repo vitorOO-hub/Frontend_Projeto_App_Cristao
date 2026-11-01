@@ -1,4 +1,4 @@
-import { ApiError } from './api/client.ts'
+import { ApiError } from '../api/client.ts'
 
 /** Texto para mostrar na tela. A API só diz "Dados inválidos.", então a tela pode passar uma dica melhor. */
 export function errorMessage(error: unknown, validationHint?: string): string {

@@ -6,7 +6,7 @@ import type { UserSelf } from '../api/auth.ts'
 import Home from './Home.tsx'
 
 vi.mock('../api/auth.ts', () => ({ logout: vi.fn() }))
-vi.mock('../components/FeedPreview.tsx', () => ({ default: () => null }))
+vi.mock('../components/feed/FeedPreview.tsx', () => ({ default: () => null }))
 
 const maria: UserSelf = { id: 'u1', name: 'Maria', username: null, email: 'maria@exemplo.com', bio: '', role: 'user', created_at: '2026-10-27T00:00:00Z' }
 

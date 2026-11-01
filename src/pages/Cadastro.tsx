@@ -3,10 +3,10 @@ import { flushSync } from 'react-dom'
 import { Link } from 'react-router'
 import { login, register, type UserSelf } from '../api/auth.ts'
 import { ApiError } from '../api/client.ts'
-import { Field, PasswordField } from '../components/Field.tsx'
-import Layout, { Spinner } from '../components/Layout.tsx'
-import { errorMessage } from '../errorMessage.ts'
-import { useFieldErrors } from '../useFieldErrors.ts'
+import { Field, PasswordField } from '../components/ui/Field.tsx'
+import Layout, { Spinner } from '../components/ui/Layout.tsx'
+import { errorMessage } from '../lib/errorMessage.ts'
+import { useFieldErrors } from '../hooks/useFieldErrors.ts'
 
 // Mesmas regras do backend (docs/api.md); o navegador confere antes de enviar.
 const RULES =

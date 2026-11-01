@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { Page } from './api/client.ts'
-import { errorMessage } from './errorMessage.ts'
+import type { Page } from '../api/client.ts'
+import { errorMessage } from '../lib/errorMessage.ts'
 
 /** Lista paginada por cursor: carrega a primeira página ao abrir, "Carregar mais" anexa e erro pode ser repetido. */
 export function usePagedList<T>(fetchPage: (cursor?: string) => Promise<Page<T>>) {

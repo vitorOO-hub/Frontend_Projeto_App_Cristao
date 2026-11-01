@@ -3,10 +3,10 @@ import { act, cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
-import { comments, createComment, deleteComment, type Comment } from '../api/comments.ts'
+import { comments, createComment, deleteComment, type Comment } from '../../api/comments.ts'
 import CommentsPanel from './CommentsPanel.tsx'
-import { invalidateVisibility } from '../visibility.ts'
-vi.mock('../api/comments.ts', () => ({ comments: vi.fn(), createComment: vi.fn(), deleteComment: vi.fn() }))
+import { invalidateVisibility } from '../../lib/visibility.ts'
+vi.mock('../../api/comments.ts', () => ({ comments: vi.fn(), createComment: vi.fn(), deleteComment: vi.fn() }))
 const item = (id: string, authorId = 'eu'): Comment => ({ id, video_id: 'v', author: { id: authorId, name: 'Ana', username: null, bio: '', created_at: '' }, text: `Comentário ${id}`, created_at: '' })
 const page = (data: Comment[], next: string | null = null) => ({ data, pagination: { next_cursor: next, has_more: !!next } })
 beforeEach(() => { vi.mocked(comments).mockResolvedValue(page([])) })

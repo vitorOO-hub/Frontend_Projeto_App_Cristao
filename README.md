@@ -27,6 +27,24 @@ const { user } = await api.post<{ user: UserSelf }>('/auth/login', { email, pass
 const me = await api.get<UserSelf>('/me')
 ```
 
+## Estrutura de `src/`
+
+```text
+src/
+  api/                 cliente HTTP central e uma função por endpoint (auth, videos, reports, moderation…)
+  components/
+    ui/                peças genéricas: Field, Layout, ListStatus, CardSelect, RouteGuards
+    feed/              FeedCard, FeedPreview, CommentsPanel
+    profile/           EditProfile, MyVideosPanel, OwnVideoActions, BlocksPanel, BlockButton
+    moderation/        ReasonForm, ReportsPanel, ReviewPanel
+  hooks/               useFieldErrors, usePagedList
+  lib/                 funções puras: categories, errorMessage, feed, format, validation, visibility
+  pages/               uma tela por rota (nomes em português, iguais às rotas: Feed, Perfil, Moderacao…)
+  App.tsx, AppRoutes.tsx, main.tsx, index.css
+```
+
+Convenções: o teste fica ao lado do arquivo (`X.test.tsx`); componentes em `PascalCase`; hooks começam com `use`; páginas usam o nome da rota em português e o resto do código usa inglês.
+
 ## Fluxos disponíveis
 
 - `/feed` e `/usuarios/:id`: consulta pública de vídeos aprovados, categorias, reprodução manual e passagem bíblica. Para reagir, comentar ou denunciar, é necessário entrar.

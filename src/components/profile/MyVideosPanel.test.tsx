@@ -2,11 +2,11 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
-import { ApiError } from '../api/client.ts'
-import { myVideos, type VideoOwn } from '../api/videos.ts'
-import MeusVideosPanel from './MeusVideosPanel.tsx'
+import { ApiError } from '../../api/client.ts'
+import { myVideos, type VideoOwn } from '../../api/videos.ts'
+import MyVideosPanel from './MyVideosPanel.tsx'
 
-vi.mock('../api/videos.ts', () => ({ myVideos: vi.fn() }))
+vi.mock('../../api/videos.ts', () => ({ myVideos: vi.fn() }))
 
 const video = (id: string, status: VideoOwn['status'], review_reason: string | null = null): VideoOwn => ({
   id,
@@ -26,7 +26,7 @@ const page = (data: VideoOwn[], next: string | null = null) => ({ data, paginati
 beforeEach(() => vi.mocked(myVideos).mockReset())
 afterEach(cleanup)
 
-const open = () => render(<MeusVideosPanel />)
+const open = () => render(<MyVideosPanel />)
 
 test('mostra o status de cada vídeo e o motivo só no rejeitado', async () => {
   vi.mocked(myVideos).mockResolvedValue(

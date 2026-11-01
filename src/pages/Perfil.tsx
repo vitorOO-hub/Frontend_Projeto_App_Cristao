@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { Link, useLocation } from 'react-router'
 import type { UserSelf } from '../api/auth.ts'
-import EditProfile from '../components/EditProfile.tsx'
+import EditProfile from '../components/profile/EditProfile.tsx'
 import type { Page } from '../api/client.ts'
 import { myFollowers, myFollowing, myProfile, reactedVideos, type Profile, type UserPublic } from '../api/profile.ts'
-import { CATEGORIES } from '../categories.ts'
-import { Brand, Spinner } from '../components/Layout.tsx'
-import ListStatus from '../components/ListStatus.tsx'
-import MeusVideosPanel from '../components/MeusVideosPanel.tsx'
-import { errorMessage } from '../errorMessage.ts'
-import { duration } from '../format.ts'
-import { usePagedList } from '../usePagedList.ts'
-import { useVisibilityRevision } from '../visibility.ts'
-import BlocksPanel from '../components/BlocksPanel.tsx'
+import { CATEGORIES } from '../lib/categories.ts'
+import { Brand, Spinner } from '../components/ui/Layout.tsx'
+import ListStatus from '../components/ui/ListStatus.tsx'
+import MyVideosPanel from '../components/profile/MyVideosPanel.tsx'
+import { errorMessage } from '../lib/errorMessage.ts'
+import { duration } from '../lib/format.ts'
+import { usePagedList } from '../hooks/usePagedList.ts'
+import { useVisibilityRevision } from '../lib/visibility.ts'
+import BlocksPanel from '../components/profile/BlocksPanel.tsx'
 
 /** O que o cartão de vídeo precisa; serve tanto para os vídeos do usuário quanto para os que ele curtiu. */
 type VideoItem = {
@@ -35,7 +35,7 @@ const tabs: Tab[] = [
   {
     id: 'videos',
     label: 'Meus vídeos',
-    panel: () => <MeusVideosPanel />,
+    panel: () => <MyVideosPanel />,
   },
   {
     id: 'curtidos',

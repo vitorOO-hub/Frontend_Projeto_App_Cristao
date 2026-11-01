@@ -3,10 +3,10 @@ import { Link, useLocation, useParams } from 'react-router'
 import { ApiError } from '../api/client.ts'
 import type { Video } from '../api/profile.ts'
 import { getVideo } from '../api/videos.ts'
-import FeedCard from '../components/FeedCard.tsx'
-import { Brand } from '../components/Layout.tsx'
-import { errorMessage } from '../errorMessage.ts'
-import { useVisibilityRevision } from '../visibility.ts'
+import FeedCard from '../components/feed/FeedCard.tsx'
+import { Brand } from '../components/ui/Layout.tsx'
+import { errorMessage } from '../lib/errorMessage.ts'
+import { useVisibilityRevision } from '../lib/visibility.ts'
 
 type State =
   | { status: 'loading' }

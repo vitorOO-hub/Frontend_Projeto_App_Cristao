@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router'
 import { feedVideos } from '../api/feed.ts'
-import { CATEGORIES } from '../categories.ts'
-import FeedCard from '../components/FeedCard.tsx'
-import { Brand } from '../components/Layout.tsx'
-import ListStatus from '../components/ListStatus.tsx'
-import { usePagedList } from '../usePagedList.ts'
-import { useVisibilityRevision } from '../visibility.ts'
+import { CATEGORIES } from '../lib/categories.ts'
+import FeedCard from '../components/feed/FeedCard.tsx'
+import { Brand } from '../components/ui/Layout.tsx'
+import ListStatus from '../components/ui/ListStatus.tsx'
+import { usePagedList } from '../hooks/usePagedList.ts'
+import { useVisibilityRevision } from '../lib/visibility.ts'
 
 /** Lista de uma categoria; trocar a categoria remonta o componente e recomeça da primeira página. */
 function FeedList({ category, selfId }: { category?: string; selfId?: string }) {

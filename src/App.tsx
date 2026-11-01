@@ -3,8 +3,8 @@ import { BrowserRouter } from 'react-router'
 import { me, type UserSelf } from './api/auth.ts'
 import { ApiError, onUnauthenticated } from './api/client.ts'
 import AppRoutes from './AppRoutes.tsx'
-import { Spinner } from './components/Layout.tsx'
-import { errorMessage } from './errorMessage.ts'
+import { Spinner } from './components/ui/Layout.tsx'
+import { errorMessage } from './lib/errorMessage.ts'
 
 export default function App() {
   // undefined: ainda consultando GET /me; null: ninguém logado.

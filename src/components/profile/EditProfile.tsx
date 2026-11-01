@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import type { UserSelf } from '../api/auth.ts'
-import { updateProfile } from '../api/profile.ts'
-import { errorMessage } from '../errorMessage.ts'
+import type { UserSelf } from '../../api/auth.ts'
+import { updateProfile } from '../../api/profile.ts'
+import { errorMessage } from '../../lib/errorMessage.ts'
 type Props = { user: UserSelf; onSaved: (user: UserSelf) => void }
 export default function EditProfile(props: Props) {
   // Trocar a conta descarta formulário, trava e pedidos da identidade anterior.

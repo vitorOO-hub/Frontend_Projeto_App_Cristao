@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { ApiError } from './api/client.ts'
+import { ApiError } from '../api/client.ts'
 import { errorMessage } from './errorMessage.ts'
 
 test('usa a mensagem da API', () => {

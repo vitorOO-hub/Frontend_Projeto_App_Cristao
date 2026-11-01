@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { CATEGORIES } from '../categories.ts'
-import { Brand } from '../components/Layout.tsx'
+import { CATEGORIES } from '../lib/categories.ts'
+import { Brand } from '../components/ui/Layout.tsx'
 
 // Ainda não há lives: a página já mostra os filtros que elas vão ter. A segmentação por igreja fica desligada
 // porque o cadastro não pede igreja (docs/escopo-e-requisitos.md), então não há dado para filtrar.

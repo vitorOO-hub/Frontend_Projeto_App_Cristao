@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { logout, type UserSelf } from '../api/auth.ts'
 import { ApiError } from '../api/client.ts'
-import Layout, { Spinner } from '../components/Layout.tsx'
-import { errorMessage } from '../errorMessage.ts'
+import Layout, { Spinner } from '../components/ui/Layout.tsx'
+import { errorMessage } from '../lib/errorMessage.ts'
 
 // Início: mostra quem está logado, leva ao feed, ao perfil e às lives, e permite sair.
 export default function Home({ user, onLogout }: { user: UserSelf; onLogout: () => void }) {

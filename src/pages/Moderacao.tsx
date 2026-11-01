@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { Brand } from '../components/Layout.tsx'
-import ReportsPanel from '../components/ReportsPanel.tsx'
-import ReviewPanel from '../components/ReviewPanel.tsx'
+import { Brand } from '../components/ui/Layout.tsx'
+import ReportsPanel from '../components/moderation/ReportsPanel.tsx'
+import ReviewPanel from '../components/moderation/ReviewPanel.tsx'
 
 const TABS = [
   { id: 'videos', label: 'Vídeos' },

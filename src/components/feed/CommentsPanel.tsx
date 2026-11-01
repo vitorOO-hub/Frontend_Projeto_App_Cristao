@@ -1,11 +1,11 @@
 import { useCallback, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
-import { comments, createComment, deleteComment } from '../api/comments.ts'
-import { errorMessage } from '../errorMessage.ts'
-import { usePagedList } from '../usePagedList.ts'
-import ListStatus from './ListStatus.tsx'
-import BlockButton from './BlockButton.tsx'
-import { useVisibilityRevision } from '../visibility.ts'
+import { comments, createComment, deleteComment } from '../../api/comments.ts'
+import { errorMessage } from '../../lib/errorMessage.ts'
+import { usePagedList } from '../../hooks/usePagedList.ts'
+import ListStatus from '../ui/ListStatus.tsx'
+import BlockButton from '../profile/BlockButton.tsx'
+import { useVisibilityRevision } from '../../lib/visibility.ts'
 
 type Props = { videoId: string; selfId?: string; onCountChange: (delta: number) => void }
 export default function CommentsPanel(props: Props) {

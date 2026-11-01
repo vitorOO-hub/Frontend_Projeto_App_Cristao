@@ -3,13 +3,13 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { afterEach, expect, test, vi } from 'vitest'
-import { blockUser, myBlocks, unblockUser } from '../api/blocks.ts'
-import { feedVideos } from '../api/feed.ts'
-import type { Video } from '../api/profile.ts'
+import { blockUser, myBlocks, unblockUser } from '../../api/blocks.ts'
+import { feedVideos } from '../../api/feed.ts'
+import type { Video } from '../../api/profile.ts'
 import BlocksPanel from './BlocksPanel.tsx'
-import Feed from '../pages/Feed.tsx'
-vi.mock('../api/blocks.ts', () => ({ blockUser: vi.fn(), myBlocks: vi.fn(), unblockUser: vi.fn() }))
-vi.mock('../api/feed.ts', () => ({ feedVideos: vi.fn(), setAmen: vi.fn() }))
+import Feed from '../../pages/Feed.tsx'
+vi.mock('../../api/blocks.ts', () => ({ blockUser: vi.fn(), myBlocks: vi.fn(), unblockUser: vi.fn() }))
+vi.mock('../../api/feed.ts', () => ({ feedVideos: vi.fn(), setAmen: vi.fn() }))
 afterEach(() => { cleanup(); vi.resetAllMocks() })
 const author = { id: 'outro', name: 'Ana', username: null, bio: '', created_at: '' }
 const video = (id: string): Video => ({ id, author, caption: `Vídeo ${id}`, category: 'louvor', bible_reference: null, status: 'approved', created_at: '', updated_at: '', duration_seconds: 10, media_url: `/api/videos/${id}/media`, reaction_count: 0, comment_count: 0, reacted_by_me: false })

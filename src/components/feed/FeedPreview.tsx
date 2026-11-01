@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { getPassage, type Passage } from '../api/bible.ts'
-import { errorMessage } from '../errorMessage.ts'
-import { type Media, type Reel, reels } from '../feed.ts'
+import { getPassage, type Passage } from '../../api/bible.ts'
+import { errorMessage } from '../../lib/errorMessage.ts'
+import { type Media, type Reel, reels } from '../../lib/feed.ts'
 
 type VerseState = { status: 'loading' } | { status: 'ok'; passage: Passage } | { status: 'error'; message: string }
 

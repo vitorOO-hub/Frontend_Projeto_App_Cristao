@@ -2,10 +2,10 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, expect, test, vi } from 'vitest'
-import { deleteVideo, editVideo, type VideoOwn } from '../api/videos.ts'
+import { deleteVideo, editVideo, type VideoOwn } from '../../api/videos.ts'
 import OwnVideoActions from './OwnVideoActions.tsx'
 
-vi.mock('../api/videos.ts', () => ({ editVideo: vi.fn(), deleteVideo: vi.fn() }))
+vi.mock('../../api/videos.ts', () => ({ editVideo: vi.fn(), deleteVideo: vi.fn() }))
 afterEach(() => { cleanup(); vi.resetAllMocks() })
 const video: VideoOwn = { id: 'v1', caption: 'Minha legenda', category: 'louvor', bible_reference: 'Salmos 23:1', status: 'approved', created_at: '', updated_at: '', duration_seconds: 10, media_url: '/api/videos/v1/media', review_reason: null }
 

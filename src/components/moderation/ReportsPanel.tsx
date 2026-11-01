@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { NOTE_MAX, NOTE_MIN, decideVideo, getVideo, reportQueue, resolveReport, type Report, type ReportStatus, type ReviewVideo } from '../api/moderation.ts'
-import { errorMessage } from '../errorMessage.ts'
-import { usePagedList } from '../usePagedList.ts'
-import { Spinner } from './Layout.tsx'
-import ListStatus from './ListStatus.tsx'
+import { NOTE_MAX, NOTE_MIN, decideVideo, getVideo, reportQueue, resolveReport, type Report, type ReportStatus, type ReviewVideo } from '../../api/moderation.ts'
+import { errorMessage } from '../../lib/errorMessage.ts'
+import { usePagedList } from '../../hooks/usePagedList.ts'
+import { Spinner } from '../ui/Layout.tsx'
+import ListStatus from '../ui/ListStatus.tsx'
 
 const FILTERS: { label: string; status: ReportStatus }[] = [
   { label: 'Abertas', status: 'open' },

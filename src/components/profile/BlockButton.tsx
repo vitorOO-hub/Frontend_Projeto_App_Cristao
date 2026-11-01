@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
-import { blockUser } from '../api/blocks.ts'
-import { errorMessage } from '../errorMessage.ts'
-import { invalidateVisibility } from '../visibility.ts'
+import { blockUser } from '../../api/blocks.ts'
+import { errorMessage } from '../../lib/errorMessage.ts'
+import { invalidateVisibility } from '../../lib/visibility.ts'
 export default function BlockButton({ userId, name }: { userId: string; name: string }) {
   const [confirm, setConfirm] = useState(false)
   const [busy, setBusy] = useState(false)

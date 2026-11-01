@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react'
-import { decideVideo, reviewQueue, type ReviewVideo } from '../api/moderation.ts'
-import type { VideoStatus } from '../api/videos.ts'
-import { CATEGORIES } from '../categories.ts'
-import { duration } from '../format.ts'
-import { usePagedList } from '../usePagedList.ts'
-import ListStatus from './ListStatus.tsx'
+import { decideVideo, reviewQueue, type ReviewVideo } from '../../api/moderation.ts'
+import type { VideoStatus } from '../../api/videos.ts'
+import { CATEGORIES } from '../../lib/categories.ts'
+import { duration } from '../../lib/format.ts'
+import { usePagedList } from '../../hooks/usePagedList.ts'
+import ListStatus from '../ui/ListStatus.tsx'
 import ReasonForm from './ReasonForm.tsx'
 
 const FILTERS: { label: string; status: VideoStatus }[] = [

@@ -1,5 +1,5 @@
 import { type ChangeEvent, type FocusEvent, useState } from 'react'
-import { fieldMessage } from './validation.ts'
+import { fieldMessage } from '../lib/validation.ts'
 
 /** Erro por campo: aparece ao sair do campo ou ao enviar, e some assim que o valor fica válido. */
 export function useFieldErrors() {

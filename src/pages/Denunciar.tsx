@@ -2,9 +2,9 @@ import { useId, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
 import { ApiError } from '../api/client.ts'
 import { REASON_MAX, REASON_MIN, reportVideo } from '../api/reports.ts'
-import { Brand, Spinner } from '../components/Layout.tsx'
-import { CardSelect } from '../components/CardSelect.tsx'
-import { errorMessage } from '../errorMessage.ts'
+import { Brand, Spinner } from '../components/ui/Layout.tsx'
+import { CardSelect } from '../components/ui/CardSelect.tsx'
+import { errorMessage } from '../lib/errorMessage.ts'
 
 const VIDEO_ID = /^[0-9a-f]{24}$/
 /** A descrição é opcional e curta; o servidor recebe "Motivo: descrição" num único campo `reason`. */

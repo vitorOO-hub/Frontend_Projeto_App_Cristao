@@ -1,11 +1,11 @@
 import { useId, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { CAPTION_MAX, MAX_FILE_BYTES, publishVideo, REFERENCE_MAX } from '../api/publish.ts'
-import { CATEGORIES } from '../categories.ts'
-import { CardSelect } from '../components/CardSelect.tsx'
-import { Field } from '../components/Field.tsx'
-import { Brand, Spinner } from '../components/Layout.tsx'
-import { errorMessage } from '../errorMessage.ts'
+import { CATEGORIES } from '../lib/categories.ts'
+import { CardSelect } from '../components/ui/CardSelect.tsx'
+import { Field } from '../components/ui/Field.tsx'
+import { Brand, Spinner } from '../components/ui/Layout.tsx'
+import { errorMessage } from '../lib/errorMessage.ts'
 
 const CATEGORY_OPTIONS = Object.entries(CATEGORIES).map(([value, label]) => ({ value, label }))
 

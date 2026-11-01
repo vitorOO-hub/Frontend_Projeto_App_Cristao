@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { myVideos, type VideoOwn, type VideoStatus } from '../api/videos.ts'
-import { CATEGORIES } from '../categories.ts'
-import ListStatus from './ListStatus.tsx'
+import { myVideos, type VideoOwn, type VideoStatus } from '../../api/videos.ts'
+import { CATEGORIES } from '../../lib/categories.ts'
+import ListStatus from '../ui/ListStatus.tsx'
 import OwnVideoActions from './OwnVideoActions.tsx'
-import { errorMessage } from '../errorMessage.ts'
-import { duration } from '../format.ts'
+import { errorMessage } from '../../lib/errorMessage.ts'
+import { duration } from '../../lib/format.ts'
 
 const STATUS: Record<VideoStatus, { label: string; icon: string }> = {
   pending: { label: 'Em análise', icon: '●' },
@@ -20,7 +20,7 @@ const FILTERS: { label: string; status?: VideoStatus }[] = [
 ]
 
 /** Os vídeos do próprio usuário em qualquer situação (em análise, aprovado, rejeitado), para a aba do perfil. */
-export default function MeusVideosPanel() {
+export default function MyVideosPanel() {
   const [status, setStatus] = useState<VideoStatus | undefined>()
   const [items, setItems] = useState<VideoOwn[]>([])
   const [next, setNext] = useState<string | null>(null)

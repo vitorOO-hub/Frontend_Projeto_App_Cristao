@@ -5,7 +5,7 @@ import { afterEach, expect, test, vi } from 'vitest'
 import Login from './Login.tsx'
 
 vi.mock('../api/auth.ts', () => ({ login: vi.fn() }))
-vi.mock('../components/FeedPreview.tsx', () => ({ default: () => null }))
+vi.mock('../components/feed/FeedPreview.tsx', () => ({ default: () => null }))
 
 afterEach(cleanup)
 

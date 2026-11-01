@@ -8,7 +8,7 @@ import type { UserSelf } from '../api/auth.ts'
 import { ApiError } from '../api/client.ts'
 import { myProfile, reactedVideos, type Video } from '../api/profile.ts'
 import { getVideo, myVideos } from '../api/videos.ts'
-import { invalidateVisibility } from '../visibility.ts'
+import { invalidateVisibility } from '../lib/visibility.ts'
 
 vi.mock('../api/profile.ts', async (original) => ({
   ...(await original<typeof import('../api/profile.ts')>()), myProfile: vi.fn(), reactedVideos: vi.fn(),

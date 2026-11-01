@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react'
-import { deleteVideo, editVideo, type VideoOwn } from '../api/videos.ts'
-import { CATEGORIES } from '../categories.ts'
-import { errorMessage } from '../errorMessage.ts'
+import { deleteVideo, editVideo, type VideoOwn } from '../../api/videos.ts'
+import { CATEGORIES } from '../../lib/categories.ts'
+import { errorMessage } from '../../lib/errorMessage.ts'
 
 export default function OwnVideoActions({ video, onChanged }: { video: VideoOwn; onChanged: () => void }) {
   const [mode, setMode] = useState<'edit' | 'delete' | null>(null)

@@ -2,10 +2,10 @@
 import { act, cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, expect, test, vi } from 'vitest'
-import { updateProfile } from '../api/profile.ts'
-import type { UserSelf } from '../api/auth.ts'
+import { updateProfile } from '../../api/profile.ts'
+import type { UserSelf } from '../../api/auth.ts'
 import EditProfile from './EditProfile.tsx'
-vi.mock('../api/profile.ts', () => ({ updateProfile: vi.fn() }))
+vi.mock('../../api/profile.ts', () => ({ updateProfile: vi.fn() }))
 afterEach(() => { cleanup(); vi.resetAllMocks() })
 const user: UserSelf = { id: 'eu', name: 'Ana', bio: 'Bio', username: null, email: 'ana@exemplo.com', role: 'user', created_at: '' }
 test('salva somente nome/bio e entrega identidade atualizada ao estado global', async () => {

@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { getPassage, type Passage } from '../api/bible.ts'
-import { setAmen } from '../api/feed.ts'
-import type { Video } from '../api/profile.ts'
-import { CATEGORIES } from '../categories.ts'
-import { errorMessage } from '../errorMessage.ts'
-import { duration } from '../format.ts'
+import { getPassage, type Passage } from '../../api/bible.ts'
+import { setAmen } from '../../api/feed.ts'
+import type { Video } from '../../api/profile.ts'
+import { CATEGORIES } from '../../lib/categories.ts'
+import { errorMessage } from '../../lib/errorMessage.ts'
+import { duration } from '../../lib/format.ts'
 import CommentsPanel from './CommentsPanel.tsx'
-import BlockButton from './BlockButton.tsx'
+import BlockButton from '../profile/BlockButton.tsx'
 
 type Verse = { status: 'loading' } | { status: 'ok'; passage: Passage } | { status: 'error'; message: string }
 

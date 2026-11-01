@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
-import { myBlocks, unblockUser } from '../api/blocks.ts'
-import { errorMessage } from '../errorMessage.ts'
-import { usePagedList } from '../usePagedList.ts'
-import { invalidateVisibility } from '../visibility.ts'
-import ListStatus from './ListStatus.tsx'
+import { myBlocks, unblockUser } from '../../api/blocks.ts'
+import { errorMessage } from '../../lib/errorMessage.ts'
+import { usePagedList } from '../../hooks/usePagedList.ts'
+import { invalidateVisibility } from '../../lib/visibility.ts'
+import ListStatus from '../ui/ListStatus.tsx'
 export default function BlocksPanel() {
   const list = usePagedList(myBlocks)
   const [busy, setBusy] = useState(false)

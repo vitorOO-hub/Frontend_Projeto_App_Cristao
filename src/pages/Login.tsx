@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { login, type UserSelf } from '../api/auth.ts'
-import { Field, PasswordField } from '../components/Field.tsx'
-import Layout, { Spinner } from '../components/Layout.tsx'
-import { errorMessage } from '../errorMessage.ts'
-import { useFieldErrors } from '../useFieldErrors.ts'
+import { Field, PasswordField } from '../components/ui/Field.tsx'
+import Layout, { Spinner } from '../components/ui/Layout.tsx'
+import { errorMessage } from '../lib/errorMessage.ts'
+import { useFieldErrors } from '../hooks/useFieldErrors.ts'
 
 export default function Login({ onLogin, notice }: { onLogin: (user: UserSelf) => void; notice?: string }) {
   const [identifier, setIdentifier] = useState('')

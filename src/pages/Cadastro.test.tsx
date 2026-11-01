@@ -9,7 +9,7 @@ import Cadastro from './Cadastro.tsx'
 
 vi.mock('../api/auth.ts', () => ({ login: vi.fn(), register: vi.fn() }))
 // O feed ao lado do formulário busca versículos na rede; não é o assunto destes testes.
-vi.mock('../components/FeedPreview.tsx', () => ({ default: () => null }))
+vi.mock('../components/feed/FeedPreview.tsx', () => ({ default: () => null }))
 
 const user = { id: 'u1', name: 'Maria', username: 'maria', email: 'maria@exemplo.com', bio: '', role: 'user', created_at: '2026-10-27T00:00:00Z' }
 const password = 'uma frase longa'

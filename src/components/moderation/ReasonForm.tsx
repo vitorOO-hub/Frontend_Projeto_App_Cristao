@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
-import { NOTE_MAX, NOTE_MIN } from '../api/moderation.ts'
-import { errorMessage } from '../errorMessage.ts'
-import { Spinner } from './Layout.tsx'
+import { NOTE_MAX, NOTE_MIN } from '../../api/moderation.ts'
+import { errorMessage } from '../../lib/errorMessage.ts'
+import { Spinner } from '../ui/Layout.tsx'
 
 export type ReasonAction = { label: string; run: (text: string) => Promise<void> }
 

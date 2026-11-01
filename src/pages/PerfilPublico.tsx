@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { publicUser, userVideos, type UserPublic } from '../api/profile.ts'
-import { errorMessage } from '../errorMessage.ts'
-import { usePagedList } from '../usePagedList.ts'
-import { useVisibilityRevision } from '../visibility.ts'
-import FeedCard from '../components/FeedCard.tsx'
-import BlockButton from '../components/BlockButton.tsx'
-import ListStatus from '../components/ListStatus.tsx'
-import { Brand } from '../components/Layout.tsx'
+import { errorMessage } from '../lib/errorMessage.ts'
+import { usePagedList } from '../hooks/usePagedList.ts'
+import { useVisibilityRevision } from '../lib/visibility.ts'
+import FeedCard from '../components/feed/FeedCard.tsx'
+import BlockButton from '../components/profile/BlockButton.tsx'
+import ListStatus from '../components/ui/ListStatus.tsx'
+import { Brand } from '../components/ui/Layout.tsx'
 
 export default function PerfilPublico({ selfId }: { selfId?: string }) {
   const { id = '' } = useParams()
