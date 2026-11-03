@@ -60,3 +60,5 @@ Os clientes usam os endpoints existentes do Flask, com cookie HttpOnly e CSRF; n
 - Contrato canônico de implementação: [API no backend](https://github.com/vitorOO-hub/Backend_Projeto_App_Cristao/blob/HEAD/docs/api.md), disponível localmente em `../Backend_Projeto_App_Cristao/docs/api.md`.
 - [Documento de Escopo e Requisitos do Projeto](https://github.com/vitorOO-hub/Backend_Projeto_App_Cristao/blob/HEAD/docs/escopo-e-requisitos.md): versão principal mantida no backend, com visão do produto, arquitetura proposta, funcionalidades, prioridades, cronograma e critérios de aceite.
 - [Requisitos oficiais do Projeto 3](https://insper.github.io/ProgramacaoEficaz/projetos/projeto3/).
+
+https://consonant-amnesty-election.ngrok-free.dev/login
