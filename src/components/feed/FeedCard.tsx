@@ -8,6 +8,7 @@ import { errorMessage } from '../../lib/errorMessage.ts'
 import { duration } from '../../lib/format.ts'
 import CommentsPanel from './CommentsPanel.tsx'
 import BlockButton from '../profile/BlockButton.tsx'
+import AmenButton from './AmenButton.tsx'
 
 type Verse = { status: 'loading' } | { status: 'ok'; passage: Passage } | { status: 'error'; message: string }
 
@@ -117,16 +118,7 @@ export default function FeedCard({ video, selfId }: { video: Video; selfId?: str
         )}
 
         <div className="feed-actions">
-          {selfId ? <button
-            type="button"
-            className="vfilter feed-amen"
-            aria-pressed={reacted}
-            aria-label={`Amém, ${count}`}
-            disabled={sending}
-            onClick={() => void toggleAmen()}
-          >
-            Amém · {count}
-          </button> : <Link className="vfilter" to="/login" state={{ from: { pathname: '/feed', search: '', hash: '' } }}>Entre para dizer Amém · {count}</Link>}
+          <AmenButton count={count} reacted={reacted} guest={!selfId} sending={sending} onToggle={() => void toggleAmen()} />
           <button type="button" className="vfilter" aria-expanded={commentsOpen} onClick={() => setCommentsOpen((open) => !open)}>{commentCount} comentários</button>
           {selfId && !own && (
             <Link to={`/videos/${video.id}/denunciar`} state={{ caption: video.caption }} className="feed-report">

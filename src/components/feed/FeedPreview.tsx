@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { getPassage, type Passage } from '../../api/bible.ts'
 import { errorMessage } from '../../lib/errorMessage.ts'
 import { type Media, type Reel, reels } from '../../lib/feed.ts'
+import HeartIcon from '../ui/HeartIcon.tsx'
 
 type VerseState = { status: 'loading' } | { status: 'ok'; passage: Passage } | { status: 'error'; message: string }
 
@@ -108,7 +109,7 @@ export default function FeedPreview() {
                 aria-label={`Amém, ${amens}`}
                 onClick={() => setSaid((list) => list.map((value, i) => (i === index ? !value : value)))}
               >
-                <span className="reel-amen-word glass">Amém</span>
+                <span className="reel-amen-word glass"><HeartIcon /></span>
                 <span className="reel-count">{amens}</span>
               </button>
               <span className="reel-comments" aria-label={`${reel.comments} comentários`}>

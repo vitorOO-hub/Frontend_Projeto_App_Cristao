@@ -51,13 +51,17 @@ export default function OwnVideoActions({ video, onChanged }: { video: VideoOwn;
       </select></label>
       <label>Referência bíblica<input value={reference} onChange={(event) => setReference(event.target.value)} maxLength={100} disabled={busy} /></label>
       {video.status === 'approved' && <p>Ao salvar, o vídeo volta para análise e sai do feed público.</p>}
-      <button className="vfilter" type="submit" disabled={busy || !caption.trim()}>{busy ? 'Salvando…' : 'Salvar alterações'}</button>
-      <button className="vfilter" type="button" disabled={busy} onClick={() => setMode(null)}>Cancelar</button>
+      <div className="action-group">
+        <button className="vfilter" type="submit" disabled={busy || !caption.trim()}>{busy ? 'Salvando…' : 'Salvar alterações'}</button>
+        <button className="vfilter" type="button" disabled={busy} onClick={() => setMode(null)}>Cancelar</button>
+      </div>
     </form>}
-    {mode === 'delete' && <div role="alertdialog" aria-label="Confirmar exclusão">
+    {mode === 'delete' && <div className="action-confirmation" role="alertdialog" aria-label="Confirmar exclusão">
       <p>Excluir “{video.caption}”? Esta ação não pode ser desfeita.</p>
-      <button className="vfilter" type="button" disabled={busy} onClick={() => void save()}>{busy ? 'Excluindo…' : 'Confirmar exclusão'}</button>
-      <button className="vfilter" type="button" disabled={busy} onClick={() => setMode(null)}>Cancelar</button>
+      <div className="action-group">
+        <button className="vfilter" type="button" disabled={busy} onClick={() => void save()}>{busy ? 'Excluindo…' : 'Confirmar exclusão'}</button>
+        <button className="vfilter" type="button" disabled={busy} onClick={() => setMode(null)}>Cancelar</button>
+      </div>
     </div>}
     {error && <p role="alert" className="alert">{error}</p>}
   </div>

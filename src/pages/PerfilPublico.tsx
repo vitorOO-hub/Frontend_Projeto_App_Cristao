@@ -26,14 +26,15 @@ function PublicContent({ id, selfId }: { id: string; selfId?: string }) {
   return <div className="vpage">
     <header className="topbar vtopbar"><Brand /><Link className="glass vback" to="/feed">← Feed</Link></header>
     <main className="glass vpanel feed">
-      {error && <div role="alert" className="alert">{error}<button className="vfilter" type="button" onClick={() => { setError(''); setAttempt((n) => n + 1) }}>Tentar de novo</button></div>}
+      {error && <div role="alert" className="alert vstate-error">{error}<button className="vfilter" type="button" onClick={() => { setError(''); setAttempt((n) => n + 1) }}>Tentar de novo</button></div>}
       {!user && !error && <p role="status">Carregando perfil…</p>}
       {user && <>
         <h1>{user.name}</h1>
         {user.username && <p>@{user.username}</p>}
         <p>{user.bio || 'Sem bio ainda.'}</p>
-        {selfId && selfId !== id && <BlockButton userId={id} name={user.name} />}
-        {selfId === id && <Link to="/perfil">Editar meu perfil e gerenciar meus vídeos</Link>}
+        {selfId && <div className="action-group public-profile-actions">
+          {selfId !== id ? <BlockButton userId={id} name={user.name} /> : <Link className="vfilter" to="/perfil">Editar meu perfil e gerenciar meus vídeos</Link>}
+        </div>}
         <PublicVideos id={id} selfId={selfId} />
       </>}
     </main>

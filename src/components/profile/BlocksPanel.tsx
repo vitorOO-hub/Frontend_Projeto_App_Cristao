@@ -18,7 +18,7 @@ export default function BlocksPanel() {
   }
   return <section aria-label="Usuários bloqueados">
     <p>Bloqueios ocultam conteúdo apenas para você. Desbloqueie para voltar a vê-lo.</p>
-    <ul className="ulist">{list.items.map(({ user }) => <li key={user.id} className="uitem">
+    <ul className="ulist blocks-list">{list.items.map(({ user }) => <li key={user.id} className="uitem">
       <span>{user.name}</span>
       <button type="button" className="vfilter" disabled={busy || list.loading} onClick={() => void unblock(user.id)}>Desbloquear {user.name}</button>
     </li>)}</ul>

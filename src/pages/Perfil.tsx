@@ -146,8 +146,10 @@ export default function Perfil({ onUserChange }: { onUserChange?: (user: UserSel
                 </p>
               </div>
             </section>
-            <EditProfile user={profile.user} onSaved={(user) => { latest.current += 1; setProfile((current) => current ? { ...current, user } : current); onUserChange?.(user) }} />
-            <Link to={`/usuarios/${profile.user.id}`}>Ver meu perfil público</Link>
+            <div className="action-group profile-actions">
+              <EditProfile user={profile.user} onSaved={(user) => { latest.current += 1; setProfile((current) => current ? { ...current, user } : current); onUserChange?.(user) }} />
+              <Link className="vfilter" to={`/usuarios/${profile.user.id}`}>Ver meu perfil público</Link>
+            </div>
             <ul className="pstats" aria-label="Números do perfil">
               {STATS.map(({ label, stat }) => (
                 <li key={stat}>
