@@ -80,12 +80,10 @@ export default function Publicar() {
               Vídeo enviado! Ele está em análise e aparece no feed assim que a moderação aprovar. Você acompanha a situação no
               perfil.
             </p>
-            <Link to="/perfil" className="button vmore">
-              Ver meus vídeos
-            </Link>
-            <button type="button" className="vfilter vmore" onClick={again}>
-              Publicar outro
-            </button>
+            <div className="action-group">
+              <Link to="/perfil" className="button">Ver meus vídeos</Link>
+              <button type="button" className="vfilter" onClick={again}>Publicar outro</button>
+            </div>
           </>
         ) : (
           <>

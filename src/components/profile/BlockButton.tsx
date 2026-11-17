@@ -15,11 +15,13 @@ export default function BlockButton({ userId, name }: { userId: string; name: st
     finally { lock.current = false; setBusy(false) }
   }
   return <span className="block-control">
-    {!confirm ? <button className="vfilter" type="button" onClick={() => setConfirm(true)}>Bloquear {name}</button> : <>
+    {!confirm ? <button className="vfilter" type="button" onClick={() => setConfirm(true)}>Bloquear {name}</button> : <span className="action-confirmation">
       <span>Ocultar vídeos e comentários de {name} para você?</span>
-      <button className="vfilter" type="button" disabled={busy} onClick={() => void block()}>{busy ? 'Bloqueando…' : 'Confirmar bloqueio'}</button>
-      <button className="vfilter" type="button" disabled={busy} onClick={() => setConfirm(false)}>Cancelar</button>
-    </>}
+      <span className="action-group">
+        <button className="vfilter" type="button" disabled={busy} onClick={() => void block()}>{busy ? 'Bloqueando…' : 'Confirmar bloqueio'}</button>
+        <button className="vfilter" type="button" disabled={busy} onClick={() => setConfirm(false)}>Cancelar</button>
+      </span>
+    </span>}
     {error && <span role="alert" className="alert">{error}</span>}
   </span>
 }

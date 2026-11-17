@@ -34,12 +34,14 @@ function ProfileEditor({ user, onSaved }: Props) {
       if (generation === lifecycle.current) { lock.current = false; setBusy(false) }
     }
   }
-  return <div className="video-management">
+  return <div className="video-management profile-editor">
     {!open ? <button className="vfilter" type="button" onClick={() => { setName(user.name); setBio(user.bio); setError(''); setOpen(true) }}>Editar perfil</button> : <form aria-label="Editar perfil" onSubmit={(event) => void save(event)}>
       <label>Nome<input value={name} onChange={(event) => setName(event.target.value)} minLength={2} maxLength={80} required disabled={busy} /></label>
       <label>Bio<textarea value={bio} onChange={(event) => setBio(event.target.value)} maxLength={300} disabled={busy} /></label>
-      <button className="vfilter" type="submit" disabled={busy || name.trim().length < 2}>{busy ? 'Salvando…' : 'Salvar perfil'}</button>
-      <button className="vfilter" type="button" disabled={busy} onClick={() => setOpen(false)}>Cancelar</button>
+      <div className="action-group">
+        <button className="vfilter" type="submit" disabled={busy || name.trim().length < 2}>{busy ? 'Salvando…' : 'Salvar perfil'}</button>
+        <button className="vfilter" type="button" disabled={busy} onClick={() => setOpen(false)}>Cancelar</button>
+      </div>
     </form>}
     {error && <p role="alert" className="alert">{error}</p>}
   </div>
